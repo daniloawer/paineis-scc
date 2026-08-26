@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel FD — Atrasados e a Receber</title>
+<style>
+:root{
+  --pink:#C2897B; --pink-dark:#8f574a; --pink-soft:#f6ece8; --pink-line:#e7cfc7;
+  --ink:#181018; --black:#0d0d0d; --muted:#7a6f78; --line:#ece6ea;
+  --red:#d11a2a; --red-soft:#fbeaec; --blue:#2e6fb7; --blue-soft:#e8f0f9;
+  --bg:#f5f1f4; --card:#ffffff;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--ink);font-size:14px}
+header{background:linear-gradient(120deg,#0d0d0d 0%,#231512 55%,#5a352c 100%);color:#fff;padding:24px 30px 62px;border-bottom:4px solid var(--pink)}
+.brand{display:flex;align-items:center;gap:14px}
+.logo{font-weight:800;font-size:26px;letter-spacing:1px;background:var(--pink);color:#fff;padding:6px 12px;border-radius:8px;line-height:1}
+header h1{margin:0;font-size:21px;font-weight:700}
+header .sub{font-size:14px;margin-top:8px;color:#ecd6cf}
+header .sub b{color:#fff}
+.wrap{max-width:1300px;margin:0 auto;padding:0 30px 70px}
+.kpis{display:flex;gap:16px;flex-wrap:wrap;margin:-38px 0 22px}
+.kpi{background:var(--card);border-radius:14px;padding:16px 20px;box-shadow:0 6px 20px rgba(24,16,24,.10);flex:1;min-width:200px;border-top:3px solid var(--pink)}
+.kpi.red{border-top-color:var(--red)}
+.kpi.blue{border-top-color:var(--blue)}
+.kpi .lbl{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;font-weight:700}
+.kpi .val{font-size:25px;font-weight:800;margin-top:5px;font-variant-numeric:tabular-nums}
+.kpi.red .val{color:var(--red)}
+.kpi.blue .val{color:var(--blue)}
+.kpi .det{font-size:12px;color:var(--muted);margin-top:4px}
+.toolbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:0}
+.tabs{display:flex;gap:6px}
+.tab{padding:10px 17px;border-radius:10px 10px 0 0;background:#e9e0e6;border:none;cursor:pointer;font-weight:700;font-size:13px;color:var(--muted);font-family:inherit}
+.tab.active{background:var(--card);color:var(--pink-dark);box-shadow:0 -3px 10px rgba(24,16,24,.05)}
+.tab .badge{display:inline-block;background:#cbbcc6;color:#3a2f37;border-radius:10px;padding:1px 8px;font-size:11px;margin-left:6px}
+.tab.active .badge{background:var(--pink);color:#fff}
+.search{flex:1;min-width:200px;display:flex}
+.search input{flex:1;padding:10px 14px;border:1px solid var(--line);border-radius:9px;font-size:14px;outline:none;font-family:inherit}
+.search input:focus{border-color:var(--pink);box-shadow:0 0 0 3px rgba(143,87,74,.16)}
+.btn{padding:10px 14px;border:1px solid var(--line);background:#fff;border-radius:9px;cursor:pointer;font-weight:700;font-size:13px;color:var(--pink-dark);font-family:inherit}
+.btn:hover{background:var(--pink-soft)}
+.filpill{display:none;align-items:center;gap:8px;background:var(--pink-soft);border:1px solid var(--pink-line);border-radius:9px;padding:8px 12px;font-size:12.5px;font-weight:700;color:var(--pink-dark)}
+.filpill.show{display:inline-flex}
+.filpill span{cursor:pointer;font-size:14px}
+.panel{background:var(--card);border-radius:0 14px 14px 14px;box-shadow:0 6px 20px rgba(24,16,24,.07);overflow:hidden;margin-bottom:26px}
+.client{border-bottom:1px solid var(--line)}
+.client:last-child{border-bottom:none}
+.chead{display:grid;grid-template-columns:26px 1.9fr 130px 160px;gap:16px;align-items:center;padding:15px 20px;cursor:pointer}
+.chead:hover{background:var(--pink-soft)}
+.caret{transition:transform .2s;color:var(--pink);font-size:13px}
+.client.open .caret{transform:rotate(90deg)}
+.cname{font-weight:800;font-size:14.5px;color:var(--ink)}
+.cmeta{font-size:11.5px;color:var(--muted);margin-top:2px}
+.cqtd{font-size:12px;color:var(--muted);text-align:right}
+.ctotal{font-weight:800;font-size:16px;text-align:right;font-variant-numeric:tabular-nums}
+.ctotal.atr{color:var(--red)}
+.ctotal.rec{color:var(--blue)}
+.ctotal.mix{color:var(--pink-dark)}
+.cbody{display:none;padding:4px 20px 20px 62px;background:#fffafd}
+.client.open .cbody{display:block}
+table.parc{width:100%;border-collapse:collapse;font-size:13px}
+table.parc th{text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);padding:6px 10px;border-bottom:2px solid var(--pink-line)}
+table.parc td{padding:7px 10px;border-bottom:1px solid #f3e8ef}
+table.parc td.r,table.parc th.r{text-align:right;font-variant-numeric:tabular-nums}
+.pill{display:inline-block;border-radius:20px;padding:2px 9px;font-size:11px;font-weight:700}
+.pill.atr{background:var(--red-soft);color:var(--red)}
+.pill.rec{background:var(--blue-soft);color:var(--blue)}
+.pill.cel{background:#f2eae6;color:#5a4f56}
+.atraso{color:var(--red);font-weight:700}
+.empty{padding:60px 20px;text-align:center;color:var(--muted)}
+.empty .big{font-size:44px;margin-bottom:10px;color:var(--pink)}
+.card{background:var(--card);border-radius:14px;box-shadow:0 6px 20px rgba(24,16,24,.07);padding:18px 22px;margin-bottom:22px}
+.card h2{margin:0 0 2px;font-size:16px;font-weight:800;color:var(--ink)}
+.card .csub{font-size:12.5px;color:var(--muted);margin-bottom:12px}
+.obar{display:grid;grid-template-columns:290px 1fr 120px;gap:12px;align-items:center;padding:6px 8px;border-radius:8px;cursor:pointer;font-size:13px}
+.obar:hover{background:var(--pink-soft)}
+.obar.sel{background:var(--pink-soft);outline:1px solid var(--pink-line)}
+.obar .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600}
+.obar .trk{height:14px;display:flex;gap:2px;align-items:stretch}
+.obar .seg2{border-radius:0 4px 4px 0;min-width:2px}
+.obar .seg2.atr{background:var(--red)}
+.obar .seg2.rec{background:var(--blue)}
+.obar .tot{text-align:right;font-variant-numeric:tabular-nums;font-weight:700}
+.legend{display:flex;gap:18px;font-size:12px;color:var(--muted);margin-top:10px;flex-wrap:wrap}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.dot{width:10px;height:10px;border-radius:3px;display:inline-block}
+.foot{font-size:12px;color:var(--muted);margin-top:8px;text-align:center}
+.down{color:#1e7d46;font-weight:700}
+.up{color:var(--red);font-weight:700}
+.pill.novo{background:#fff3d6;color:#8a6100}
+.vgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:20px}
+.vcol h3{margin:0 0 8px;font-size:11.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted)}
+.vrow{display:flex;justify-content:space-between;gap:10px;font-size:12.5px;padding:5px 0;border-bottom:1px solid #f3ece9}
+.vrow .vn{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vrow .vv{font-variant-numeric:tabular-nums;white-space:nowrap}
+.vtot{display:flex;justify-content:space-between;font-size:12.5px;padding:6px 0;font-weight:800}
+.tip{position:fixed;pointer-events:none;background:#0d0d0d;color:#fff;padding:7px 10px;border-radius:7px;font-size:12px;opacity:0;transition:opacity .1s;z-index:50;white-space:nowrap}
+.tip b{color:var(--pink)}
+.mbar{cursor:default}
+.mbar:hover rect{opacity:.8}
+@media(max-width:900px){
+  .chead{grid-template-columns:22px 1fr 120px}
+  .chead .cqtd{display:none}
+  .cbody{padding-left:22px}
+  .obar{grid-template-columns:1fr;gap:4px}
+  .obar .tot{text-align:left}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><span class="logo">SCC</span>
+    <div><h1>Painel FD &mdash; Atrasados e a Receber</h1>
+      <div class="sub">&Uacute;ltima atualiza&ccedil;&atilde;o: <b>26/08/2026</b></div></div>
+  </div>
+</header>
+<div class="wrap">
+  <div class="kpis" id="kpis"></div>
+  <div class="toolbar">
+    <div class="tabs">
+      <button class="tab active" data-st="Atrasado">Atrasados <span class="badge" id="bAtr">0</span></button>
+      <button class="tab" data-st="A Receber">A Receber <span class="badge" id="bRec">0</span></button>
+      <button class="tab" data-st="">Todos <span class="badge" id="bTod">0</span></button>
+    </div>
+    <div class="search"><input id="q" type="text" placeholder="Buscar cliente..."></div>
+    <span class="filpill" id="filpill"><b id="filnome"></b><span title="Limpar filtro de célula" id="filx">&times;</span></span>
+    <button class="btn" onclick="expandAll(true)">Expandir</button>
+    <button class="btn" onclick="expandAll(false)">Recolher</button>
+  </div>
+  <div class="panel" id="list"></div>
+
+  <div class="card">
+    <h2>Varia&ccedil;&atilde;o desde a &uacute;ltima atualiza&ccedil;&atilde;o (12/08)</h2>
+    <div class="csub" id="varSub"></div>
+    <div class="vgrid" id="varBox"></div>
+  </div>
+
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px">
+      <div><h2>Vencimentos m&ecirc;s a m&ecirc;s</h2><div class="csub" id="mesSub"></div></div>
+      <div style="text-align:right"><div style="font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;font-weight:700">Somat&oacute;rio</div><div id="mesSum" style="font-size:19px;font-weight:800;color:var(--pink-dark)">&mdash;</div></div>
+    </div>
+    <div id="chartMes" style="width:100%;overflow-x:auto"></div>
+  </div>
+
+  <div class="card">
+    <h2>Total por c&eacute;lula</h2>
+    <div class="csub" id="celsub"></div>
+    <div id="obars"></div>
+    <div class="legend">
+      <span><span class="dot" style="background:var(--red)"></span>Atrasado</span>
+      <span><span class="dot" style="background:var(--blue)"></span>A Receber</span>
+      <span>Clique numa c&eacute;lula para filtrar a lista de clientes</span>
+    </div>
+  </div>
+  <div class="foot">Painel est&aacute;tico &mdash; regenerar quando sair novo relat&oacute;rio &bull; Dias de atraso calculados na data em que o painel &eacute; aberto &bull; Crit&eacute;rio: parcelas sem data de pagamento no relat&oacute;rio</div>
+</div>
+<div class="tip" id="tip"></div>
+<script>
+const DATA = [{"cliente": "AD STUDIO", "doc": "", "venc": "2025-12-26", "status": "Atrasado", "centro": "CÉLULA AUGUSTO (TRAB.CONTENC.)", "unidade": "RIBEIRÃO PRETO", "valor": 300}, {"cliente": "ANTARES CENTRO DE BELEZA LTDA", "doc": "", "venc": "2026-02-10", "status": "Atrasado", "centro": "CÉLULA TAMER (TRAB.CONTENC.)", "unidade": "RIBEIRÃO PRETO", "valor": 150}, {"cliente": "FABIO CARDOSO MINTO", "doc": "", "venc": "2026-02-10", "status": "Atrasado", "centro": "CÉLULA CONTENCIOSO CÍVEL (RP)", "unidade": "RIBEIRÃO PRETO", "valor": 32.75}, {"cliente": "TITANIA CENTRO DE BELEZA LTDA", "doc": "", "venc": "2026-02-10", "status": "Atrasado", "centro": "CÉLULA TAMER (TRAB.CONTENC.)", "unidade": "RIBEIRÃO PRETO", "valor": 400}, {"cliente": "WAGNER BATISTA DO NASCIMENTO JUNIOR", "doc": "", "venc": "2026-02-10", "status": "Atrasado", "centro": "CÉLULA MOREIRA (RECLAMANTE)", "unidade": "RIBEIRÃO PRETO", "valor": 150}, {"cliente": "OTÁVIO DE FREITAS TAVARES", "doc": "", "venc": "2025-09-30", "status": "Atrasado", "centro": "CÉLULA CONTENCIOSO CÍVEL (RP)", "unidade": "RIBEIRÃO PRETO", "valor": 555.3}, {"cliente": "ANDERSON P. PANDOSSIO & PANDOSSIO LTDA", "doc": "", "venc": "2026-02-10", "status": "Atrasado", "centro": "CÉLULA TAMER (TRAB.CONTENC.)", "unidade": "RIBEIRÃO PRETO", "valor": 300}, {"cliente": "JUNIOR MACHADO GARCIA", "doc": "", "venc": "2025-10-30", "status": "Atrasado", "centro": "CÉLULA MOREIRA (RECLAMANTE)", "unidade": "RIBEIRÃO PRETO", "valor": 20}, {"cliente": "RENATO DE OLIVEIRA MARTINS", "doc": "", "venc": "2025-10-30", "status": "Atrasado", "centro": "CÉLULA CONTENCIOSO CÍVEL (RP)", "unidade": "RIBEIRÃO PRETO", "valor": 3702}, {"cliente": "SEBASTIÃO LORENTI", "doc": "", "venc": "2026-02-10", "status": "Atrasado", "centro": "CÉLULA FABIO (TRAB.CONTENC.)", "unidade": "RIBEIRÃO PRETO", "valor": 800}, {"cliente": "JOSE CARLOS DA FREIRIA TRANSPORTADORA", "doc": "", "venc": "2026-02-10", "status": "Atrasado", "centro": "CÉLULA TAMER (TRAB.CONTENC.)", "unidade": "RIBEIRÃO PRETO", "valor": 150}, {"cliente": "JOSE CARLOS DA FREIRIA TRANSPORTADORA", "doc": "", "venc": "2026-02-10", "status": "Atrasado", "centro": "CÉLULA TAMER (TRAB.CONTENC.)", "unidade": "RIBEIRÃO PRETO", "valor": 300}, {"cliente": "JOSÉ MAURÍCIO P. MORANDINI", "doc": "", "venc": "2026-02-10", "status": "Atrasado", "centro": "CÉLULA FABIO (TRAB.CONTENC.)", "unidade": "RIBEIRÃO PRETO", "valor": 600}, {"cliente": "RADIOLOGIA E TOMOGRAFIA ODONTOLOGICA ROSIN LTDA", "doc": "", "venc": "2026-02-10", "status": "Atrasado", "centro": "CÉLULA FABIO (TRAB.CONTENC.)", "unidade": "RIBEIRÃO PRETO", "valor": 300}, {"cliente": "BARTIRA MARQUES PIZARRO (107)", "doc": "", "venc": "2025-11-25", "status": "Atrasado", "centro": "CÉLULA CONTENCIOSO CÍVEL (RP)", "unidade": "RIBEIRÃO PRETO", "valor": 42.43}, {"cliente": "WILSON MESTRINER JUNIOR(30)", "doc": "", "venc": "2026-02-10", "status": "Atrasado", "centro": "CÉLULA NÁJILA (PÚBLICO/ADM)", "unidade": "RIBEIRÃO PRETO", "valor": 40.32}, {"cliente": "LABELA CENTRO DE BELEZA LTDA - EPP", "doc": "", "venc": "2026-02-10", "status": "Atrasado", "centro": "CÉLULA NÁJILA (PÚBLICO/ADM)", "unidade": "RIBEIRÃO PRETO", "valor": 20.98}, {"cliente": "MELISSA BERNUZZI MARTINS", "doc": "", "venc": "2026-02-10", "status": "Atrasado", "centro": "CÉLULA AUGUSTO (TRAB.CONTENC.)", "unidade": "RIBEIRÃO PRETO", "valor": 151.08}, {"cliente": "CURSO E COLEGIO GABARITO", "doc": "", "venc": "2026-02-10", "status": "Atrasado", "centro": "CÉLULA TRAB. CONTENC. (UNIDADES)", "unidade": "SÃO PAULO", "valor": 350}, {"cliente": "ANDERSON P. PANDOSSIO & PANDOSSIO LTDA", "doc": "", "venc": "2026-02-10", "status": "Atrasado", "centro": "CÉLULA TAMER (TRAB.CONTENC.)", "unidade": "RIBEIRÃO PRETO", "valor": 500}, {"cliente": "CARLOS RAFAEL CARIOLA TURIBIO EIRELI", "doc": "", "venc": "2026-01-26", "status": "Atrasado", "centro": "CÉLULA TAMER (TRAB.CONTENC.)", "unidade": "RIBEIRÃO PRETO", "valor": 350}, {"cliente": "SILVIO HENRIQUE DA SILVA", "doc": "", "venc": "2026-01-26", "status": "Atrasado", "centro": "CÉLULA CONTENCIOSO CÍVEL (RP)", "unidade": "RIBEIRÃO PRETO", "valor": 37.02}, {"cliente": "VULCATEC", "doc": "", "venc": "2026-01-26", "status": "Atrasado", "centro": "CÉLULA CONTENCIOSO CÍVEL (RP)", "unidade": "RIBEIRÃO PRETO", "valor": 111.06}, {"cliente": "CLINICA DE FISIOTERAPIA B & D LTDA", "doc": "", "venc": "2026-02-28", "status": "Atrasado", "centro": "CÉLULA TRAB. CONTENC. (UNIDADES)", "unidade": "SÃO PAULO", "valor": 149.27}, {"cliente": "CRISTIANO FACURY NOVAIS", "doc": "", "venc": "2026-02-28", "status": "Atrasado", "centro": "CÉLULA CONTENCIOSO CÍVEL (RP)", "unidade": "RIBEIRÃO PRETO", "valor": 68.7}, {"cliente": "SOMMA COMERCIO DE PELICULAS DE CONTROLE SOLAR LTDA", "doc": "", "venc": "2026-02-28", "status": "Atrasado", "centro": "CÉLULA CONSULTIVO CÍVEL (RP)", "unidade": "RIBEIRÃO PRETO", "valor": 33.61}, {"cliente": "RJ ARMAZENS GERAIS E SERVICOS LOGISTICOS LTDA", "doc": "", "venc": "2026-03-30", "status": "Atrasado", "centro": "CÉLULA TRAB. CONTENC. (UNIDADES)", "unidade": "SÃO PAULO", "valor": 400}, {"cliente": "REFRIO ARMAZENS GERAIS LTDA.", "doc": "", "venc": "2026-03-30", "status": "Atrasado", "centro": "CÉLULA TRAB. CONTENC. (UNIDADES)", "unidade": "SÃO PAULO", "valor": 138.95}, {"cliente": "AMBIENTAL LIMPEZA, CONSERVAÇÃO E CONSTRUÇÃO EIRELI", "doc": "", "venc": "2026-04-10", "status": "Atrasado", "centro": "CÉLULA FABIO (TRAB.CONTENC.)", "unidade": "RIBEIRÃO PRETO", "valor": 250}, {"cliente": "ROBERTO MARCONDES DE SALLES ULSON", "doc": "", "venc": "2026-03-30", "status": "Atrasado", "centro": "CÉLULA FABIO (TRAB.CONTENC.)", "unidade": "RIBEIRÃO PRETO", "valor": 150}, {"cliente": "ANA CAROLINA LOPES MENDES STUDIO DE BELEZA LTDA", "doc": "", "venc": "2026-03-30", "status": "Atrasado", "centro": "CÉLULA TAMER (TRAB.CONTENC.)", "unidade": "RIBEIRÃO PRETO", "valor": 250}, {"cliente": "CAFE D ELLAS LTDA", "doc": "", "venc": "2026-03-30", "status": "Atrasado", "centro": "CÉLULA FABIO (TRAB.CONTENC.)", "unidade": "RIBEIRÃO PRETO", "valor": 300}, {"cliente": "CARSTEN SERVICOS E TRANSPORTES LTDA", "doc": "", "venc": "2026-05-15", "status": "Atrasado", "centro": "CÉLULA FABIO (TRAB.CONTENC.)", "unidade": "RIBEIRÃO PRETO", "valor": 2903.52}, {"cliente": "CARSTEN SERVICOS E TRANSPORTES LTDA", "doc": "", "venc": "2026-05-30", "status": "Atrasado", "centro": "CÉLULA FABIO (TRAB.CONTENC.)", "unidade": "RIBEIRÃO PRETO", "valor": 3565.35}, {"cliente": "RODRIGO CAMPOS DA SILVA", "doc": "", "venc": "2026-05-30", "status": "Atrasado", "centro": "CÉLULA NÁJILA (PÚBLICO/ADM)", "unidade": "RIBEIRÃO PRETO", "valor": 21.19}, {"cliente": "E.M.F AGROPECUARIA LTDA", "doc": "", "venc": "2026-05-30", "status": "Atrasado", "centro": "CÉLULA CONSULTIVO TRAB. (RP)", "unidade": "RIBEIRÃO PRETO", "valor": 389.69}, {"cliente": "RADIOLOGIA E TOMOGRAFIA ODONTOLOGICA ROSIN LTDA", "doc": "", "venc": "2026-05-30", "status": "Atrasado", "centro": "CÉLULA FABIO (TRAB.CONTENC.)", "unidade": "RIBEIRÃO PRETO", "valor": 893.28}, {"cliente": "EMBRATER – EMPREENDIMENTOS IMOBILIÁRIOS LTDA", "doc": "", "venc": "2026-05-30", "status": "Atrasado", "centro": "CÉLULA CONTENCIOSO CÍVEL (RP)", "unidade": "RIBEIRÃO PRETO", "valor": 934.35}, {"cliente": "ESDRAS SILVA DE SANTANA", "doc": "", "venc": "2026-05-30", "status": "Atrasado", "centro": "CÉLULA NÁJILA (PÚBLICO/ADM)", "unidade": "RIBEIRÃO PRETO", "valor": 576.3}, {"cliente": "ANDERSON P. PANDOSSIO & PANDOSSIO LTDA", "doc": "", "venc": "2026-05-30", "status": "Atrasado", "centro": "CÉLULA TAMER (TRAB.CONTENC.)", "unidade": "RIBEIRÃO PRETO", "valor": 700}, {"cliente": "SEBASTIÃO LORENTI", "doc": "", "venc": "2026-05-30", "status": "Atrasado", "centro": "CÉLULA TAMER (TRAB.CONTENC.)", "unidade": "RIBEIRÃO PRETO", "valor": 250}, {"cliente": "VERA MARTINS", "doc": "", "venc": "2026-05-30", "status": "Atrasado", "centro": "CÉLULA CONTENCIOSO CÍVEL (RP)", "unidade": "RIBEIRÃO PRETO", "valor": 115.26}, {"cliente": "IFOOD.COM AGÊNCIA DE RESTAURANTES ONLINE S.A.", "doc": "", "venc": "2026-06-30", "status": "Atrasado", "centro": "CÉLULA IFOOD", "unidade": "SÃO PAULO", "valor": 3210}, {"cliente": "CARSTEN SERVICOS E TRANSPORTES LTDA", "doc": "", "venc": "2026-06-30", "status": "Atrasado", "centro": "CÉLULA FABIO (TRAB.CONTENC.)", "unidade": "RIBEIRÃO PRETO", "valor": 1508.13}, {"cliente": "GUILHERME PINCERNO FAVARO", "doc": "", "venc": "2026-06-30", "status": "Atrasado", "centro": "CÉLULA TAMER (TRAB.CONTENC.)", "unidade": "RIBEIRÃO PRETO", "valor": 11579.87}, {"cliente": "OSWALDO PINTO DE CARVALHO", "doc": "", "venc": "2026-06-30", "status": "Atrasado", "centro": "CÉLULA TAMER (TRAB.CONTENC.)", "unidade": "RIBEIRÃO PRETO", "valor": 150}, {"cliente": "EMBRATER – EMPREENDIMENTOS IMOBILIÁRIOS LTDA", "doc": "", "venc": "2026-06-30", "status": "Atrasado", "centro": "CÉLULA CONTENCIOSO CÍVEL (RP)", "unidade": "RIBEIRÃO PRETO", "valor": 576.3}, {"cliente": "RADIOLOGIA E TOMOGRAFIA ODONTOLOGICA ROSIN LTDA", "doc": "", "venc": "2026-06-30", "status": "Atrasado", "centro": "CÉLULA FABIO (TRAB.CONTENC.)", "unidade": "RIBEIRÃO PRETO", "valor": 300}, {"cliente": "RONALDO CESAR NASCIMENTO", "doc": "", "venc": "2026-06-30", "status": "Atrasado", "centro": "CÉLULA CONTENCIOSO CÍVEL (RP)", "unidade": "RIBEIRÃO PRETO", "valor": 68.7}, {"cliente": "INST DE ENSINO INF. E FUND. LICEU ALBERT SABIN", "doc": "", "venc": "2026-06-30", "status": "Atrasado", "centro": "CÉLULA COBRANÇAS - CÍVEL", "unidade": "RIBEIRÃO PRETO", "valor": 4146.5}, {"cliente": "ORGANIZAÇÃO EDUCACIONAL ALBERT SABIN", "doc": "", "venc": "2026-06-30", "status": "Atrasado", "centro": "CÉLULA COBRANÇAS - CÍVEL", "unidade": "RIBEIRÃO PRETO", "valor": 1940.01}, {"cliente": "ORGANIZAÇÃO EDUCACIONAL CARLOS CHAGAS FILHO", "doc": "", "venc": "2026-06-30", "status": "Atrasado", "centro": "CÉLULA COBRANÇAS - CÍVEL", "unidade": "RIBEIRÃO PRETO", "valor": 3022.84}, {"cliente": "IMEDIATO ORGANIZACAO LOGISTICA EM TRANSPORTES LTDA", "doc": "", "venc": "2026-07-20", "status": "Atrasado", "centro": "CÉLULA FABIO (TRAB.CONTENC.)", "unidade": "RIBEIRÃO PRETO", "valor": 260}, {"cliente": "IFOOD.COM AGÊNCIA DE RESTAURANTES ONLINE S.A.", "doc": "", "venc": "2026-07-31", "status": "Atrasado", "centro": "CÉLULA IFOOD", "unidade": "SÃO PAULO", "valor": 6835.99}, {"cliente": "IFOOD.COM AGÊNCIA DE RESTAURANTES ONLINE S.A.", "doc": "", "venc": "2026-07-31", "status": "Atrasado", "centro": "CÉLULA IFOOD", "unidade": "SÃO PAULO", "valor": 3930}, {"cliente": "MEDWAY RESIDÊNCIA MÉDICA LTDA", "doc": "", "venc": "2026-07-30", "status": "Atrasado", "centro": "CÉLULA ELISSA (CONSULT. CÍVEL)", "unidade": "SÃO PAULO", "valor": 154.59}, {"cliente": "ADILSON RENATO NIGRO", "doc": "", "venc": "2026-07-30", "status": "Atrasado", "centro": "CÉLULA CONSULTIVO CÍVEL (RP)", "unidade": "RIBEIRÃO PRETO", "valor": 133.11}, {"cliente": "ANDERSON MAIA CUMBA", "doc": "", "venc": "2026-07-31", "status": "Atrasado", "centro": "CÉLULA CONTENCIOSO CÍVEL (RP)", "unidade": "RIBEIRÃO PRETO", "valor": 34.35}, {"cliente": "BALOES SANTA CLARA INDUSTRIA E COMERCIO LTDA - ME", "doc": "", "venc": "2026-07-31", "status": "Atrasado", "centro": "CÉLULA NÁJILA (PÚBLICO/ADM)", "unidade": "RIBEIRÃO PRETO", "valor": 74.85}, {"cliente": "CARLOS CESAR PALMA SPINELLI", "doc": "", "venc": "2026-07-31", "status": "Atrasado", "centro": "CÉLULA CONTENCIOSO CÍVEL (RP)", "unidade": "RIBEIRÃO PRETO", "valor": 76.84}, {"cliente": "CARSTEN SERVICOS E TRANSPORTES LTDA", "doc": "", "venc": "2026-07-31", "status": "Atrasado", "centro": "CÉLULA FABIO (TRAB.CONTENC.)", "unidade": "RIBEIRÃO PRETO", "valor": 10021.13}, {"cliente": "CEF CONSTRUCOES E EQUIPAMENTOS LTDA", "doc": "", "venc": "2026-07-31", "status": "Atrasado", "centro": "CÉLULA FABIO (TRAB.CONTENC.)", "unidade": "RIBEIRÃO PRETO", "valor": 202.6}, {"cliente": "EDUARDO AZEVEDO DOTTO", "doc": "", "venc": "2026-07-31", "status": "Atrasado", "centro": "CÉLULA FABIO (TRAB.CONTENC.)", "unidade": "RIBEIRÃO PRETO", "valor": 710}, {"cliente": "EDUARDO AZEVEDO DOTTO ME", "doc": "", "venc": "2026-07-31", "status": "Atrasado", "centro": "CÉLULA FABIO (TRAB.CONTENC.)", "unidade": "RIBEIRÃO PRETO", "valor": 828.18}, {"cliente": "FERNANDO AFIF CURY", "doc": "", "venc": "2026-07-31", "status": "Atrasado", "centro": "CÉLULA NÁJILA (PÚBLICO/ADM)", "unidade": "RIBEIRÃO PRETO", "valor": 576.3}, {"cliente": "FLEX COMÉRCIO E REPRESENTAÇÃO LTDA", "doc": "", "venc": "2026-07-31", "status": "Atrasado", "centro": "CÉLULA NÁJILA (PÚBLICO/ADM)", "unidade": "RIBEIRÃO PRETO", "valor": 740.4}, {"cliente": "FOODEBS RESTAURANTE LTDA", "doc": "", "venc": "2026-07-31", "status": "Atrasado", "centro": "CÉLULA FABIO (TRAB.CONTENC.)", "unidade": "RIBEIRÃO PRETO", "valor": 300}, {"cliente": "R & G FOGUEL LTDA", "doc": "", "venc": "2026-07-31", "status": "Atrasado", "centro": "CÉLULA FABIO (TRAB.CONTENC.)", "unidade": "RIBEIRÃO PRETO", "valor": 700}, {"cliente": "RESIDENCIAL PERDIZES", "doc": "", "venc": "2026-07-31", "status": "Atrasado", "centro": "CÉLULA TAMER (TRAB.CONTENC.)", "unidade": "RIBEIRÃO PRETO", "valor": 150}, {"cliente": "RICARDO MARTINS DA SILVEIRA GARCIA", "doc": "", "venc": "2026-07-31", "status": "Atrasado", "centro": "CÉLULA CONSULTIVO CÍVEL (RP)", "unidade": "RIBEIRÃO PRETO", "valor": 74.97}, {"cliente": "ZUCKER CLUB & LOUNGE", "doc": "", "venc": "2026-07-31", "status": "Atrasado", "centro": "CÉLULA FABIO (TRAB.CONTENC.)", "unidade": "RIBEIRÃO PRETO", "valor": 300}, {"cliente": "IFOOD.COM AGÊNCIA DE RESTAURANTES ONLINE S.A.", "doc": "", "venc": "2026-08-30", "status": "A Receber", "centro": "CÉLULA IFOOD", "unidade": "SÃO PAULO", "valor": 3324.79}];
+const PREV = {"OTÁVIO DE FREITAS TAVARES": 555.3, "CRISTIANO FACURY NOVAIS": 199.7, "JUNIOR MACHADO GARCIA": 20.0, "RENATO DE OLIVEIRA MARTINS": 3702.0, "BARTIRA MARQUES PIZARRO (107)": 42.43, "AD STUDIO": 300.0, "CARLOS RAFAEL CARIOLA TURIBIO EIRELI": 350.0, "SILVIO HENRIQUE DA SILVA": 37.02, "ANDERSON P. PANDOSSIO & PANDOSSIO LTDA": 1500.0, "R & G FOGUEL LTDA": 1250.0, "FLEX COMÉRCIO E REPRESENTAÇÃO LTDA": 2517.12, "MELISSA BERNUZZI MARTINS": 151.08, "CURSO E COLEGIO GABARITO": 350.0, "SEBASTIÃO LORENTI": 1050.0, "JOSÉ MAURÍCIO P. MORANDINI": 600.0, "WILSON MESTRINER JUNIOR(30)": 40.32, "LABELA CENTRO DE BELEZA LTDA - EPP": 20.98, "RADIOLOGIA E TOMOGRAFIA ODONTOLOGICA ROSIN LTDA": 1493.28, "WAGNER BATISTA DO NASCIMENTO JUNIOR": 150.0, "SOMMA COMERCIO DE PELICULAS DE CONTROLE SOLAR LTDA": 67.22, "TITANIA CENTRO DE BELEZA LTDA": 400.0, "ANTARES CENTRO DE BELEZA LTDA": 150.0, "FABIO CARDOSO MINTO": 32.75, "CLINICA DE FISIOTERAPIA B & D LTDA": 149.27, "EDUARDO AZEVEDO DOTTO": 860.0, "ROBERTO MARCONDES DE SALLES ULSON": 150.0, "ANA CAROLINA LOPES MENDES STUDIO DE BELEZA LTDA": 250.0, "CAFE D ELLAS LTDA": 300.0, "RJ ARMAZENS GERAIS E SERVICOS LOGISTICOS LTDA": 400.0, "REFRIO ARMAZENS GERAIS LTDA.": 138.95, "AMBIENTAL LIMPEZA, CONSERVAÇÃO E CONSTRUÇÃO EIRELI": 250.0, "CARSTEN SERVICOS E TRANSPORTES LTDA": 21991.44, "RODRIGO CAMPOS DA SILVA": 21.19, "E.M.F AGROPECUARIA LTDA": 389.69, "EMBRATER – EMPREENDIMENTOS IMOBILIÁRIOS LTDA": 1510.65, "ESDRAS SILVA DE SANTANA": 576.3, "VERA MARTINS": 115.26, "RONALDO CESAR NASCIMENTO": 68.7, "GUILHERME PINCERNO FAVARO": 11579.87, "OSWALDO PINTO DE CARVALHO": 150.0, "IFOOD.COM AGÊNCIA DE RESTAURANTES ONLINE S.A.": 17515.99, "IMEDIATO ORGANIZACAO LOGISTICA EM TRANSPORTES LTDA": 260.0, "MEDWAY RESIDÊNCIA MÉDICA LTDA": 154.59, "ADILSON RENATO NIGRO": 133.11, "ANDERSON MAIA CUMBA": 34.35, "BALOES SANTA CLARA INDUSTRIA E COMERCIO LTDA - ME": 74.85, "CARLOS CESAR PALMA SPINELLI": 76.84, "CEF CONSTRUCOES E EQUIPAMENTOS LTDA": 202.6, "FERNANDO AFIF CURY": 576.3, "RESIDENCIAL PERDIZES": 150.0, "RICARDO MARTINS DA SILVEIRA GARCIA": 74.97};      /* total em aberto por cliente na atualização anterior */
+const GONE = [{"nome": "SALZ BAR E RESTAURANTE", "valor": 828.18}, {"nome": "REGIONAL VITTA FRANCA DESENVOLVIMEN", "valor": 800.4}, {"nome": "REFRIO ARMAZÉNS GERAISL LTDA", "valor": 493.92}, {"nome": "TRANSPORTADORA SERRA AZUL", "valor": 450.0}, {"nome": "ROS RESTAURANTE", "valor": 300.0}, {"nome": "ZUCKER RESTAURANTE LTDA", "valor": 300.0}, {"nome": "GOCIL SERVICOS DE VIGILANCIA E SEGU", "valor": 150.0}, {"nome": "GABRIEL CURY NETO", "valor": 150.0}, {"nome": "PETROMIX", "valor": 145.85}, {"nome": "INVENZI TECNOLOGIA LTDA", "valor": 143.97}, {"nome": "SERVICOR SERVICOS E COMERCIO DE ART", "valor": 111.06}, {"nome": "HPB MONTAGENS", "valor": 70.4}, {"nome": "ELOIZA HELENA MESSALLE RIBEIRO", "valor": 22.11}];         /* clientes que saíram do relatório desde então */
+const PREV_TOT = {"atr": 77100.01, "rec": 0};  /* {atr, rec} totais anteriores */
+const PREV_DATE = '12/08';
+
+const fmt = v => v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+const fmtD = s => { const [y,m,d]=s.split('-'); return d+'/'+m+'/'+y; };
+const hoje = new Date(); hoje.setHours(0,0,0,0);
+const dias = s => Math.floor((hoje - new Date(s+'T00:00:00'))/86400000);
+const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const sum = ps => ps.reduce((s,p)=>s+p.valor,0);
+
+let fStatus='Atrasado', fCel='', fQ='';
+const openSet = new Set();
+/* total atual por cliente (base completa) para comparação com PREV */
+const CURTOT = {};
+DATA.forEach(x=>{ CURTOT[x.cliente]=(CURTOT[x.cliente]||0)+x.valor; });
+
+/* KPIs fixos (base completa) */
+(function(){
+  const pl=(n,s)=>n+' '+s+(n>1?'s':'');
+  const atr=DATA.filter(x=>x.status==='Atrasado'), rec=DATA.filter(x=>x.status==='A Receber');
+  const nc=a=>new Set(a.map(x=>x.cliente)).size;
+  const dAtr=sum(atr)-PREV_TOT.atr, dRec=sum(rec)-PREV_TOT.rec;
+  const varTxt=d=>d<-0.005?`<span class="down">&#9660; ${fmt(-d)}</span>`:(d>0.005?`<span class="up">&#9650; ${fmt(d)}</span>`:'sem varia&ccedil;&atilde;o');
+  document.getElementById('kpis').innerHTML = `
+    <div class="kpi red"><div class="lbl">Total atrasado</div><div class="val">${fmt(sum(atr))}</div><div class="det">${pl(atr.length,'parcela')} &bull; ${pl(nc(atr),'cliente')} &bull; ${PREV_DATE}: ${fmt(PREV_TOT.atr)} ${varTxt(dAtr)}</div></div>
+    <div class="kpi blue"><div class="lbl">Total a receber</div><div class="val">${fmt(sum(rec))}</div><div class="det">${pl(rec.length,'parcela')} &bull; ${pl(nc(rec),'cliente')} &bull; ${PREV_DATE}: ${fmt(PREV_TOT.rec)} ${varTxt(dRec)}</div></div>
+    <div class="kpi"><div class="lbl">Total geral</div><div class="val">${fmt(sum(DATA))}</div><div class="det">${pl(DATA.length,'parcela')} &bull; ${pl(nc(DATA),'cliente')} &bull; ${pl(new Set(DATA.map(x=>x.centro)).size,'célula')}</div></div>`;
+})();
+
+/* badges fixos */
+document.getElementById('bAtr').textContent = new Set(DATA.filter(x=>x.status==='Atrasado').map(x=>x.cliente)).size;
+document.getElementById('bRec').textContent = new Set(DATA.filter(x=>x.status==='A Receber').map(x=>x.cliente)).size;
+document.getElementById('bTod').textContent = new Set(DATA.map(x=>x.cliente)).size;
+
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  t.classList.add('active'); fStatus=t.dataset.st; render();
+});
+document.getElementById('q').addEventListener('input',e=>{fQ=e.target.value.trim().toLowerCase();render();});
+document.getElementById('filx').onclick=()=>{fCel='';render();};
+
+function expandAll(open){
+  document.querySelectorAll('.client').forEach(el=>{
+    el.classList.toggle('open',open);
+    const k=el.dataset.k;
+    if(open) openSet.add(k); else openSet.delete(k);
+  });
+}
+
+function filtered(){
+  return DATA.filter(x =>
+    (!fStatus || x.status===fStatus) &&
+    (!fCel || x.centro===fCel) &&
+    (!fQ || x.cliente.toLowerCase().includes(fQ)));
+}
+
+function render(){
+  const rows=filtered();
+
+  /* pill do filtro de célula */
+  const fp=document.getElementById('filpill');
+  fp.classList.toggle('show',!!fCel);
+  document.getElementById('filnome').textContent=fCel;
+
+  /* ---- lista de clientes (primeiro plano) ---- */
+  const byCli={};
+  rows.forEach(x=>{ (byCli[x.cliente]=byCli[x.cliente]||[]).push(x); });
+  const clientes=Object.entries(byCli).sort((a,b)=>sum(b[1])-sum(a[1]));
+  const totalLista=rows.length?sum(rows):0;
+
+  if(!clientes.length){
+    document.getElementById('list').innerHTML='<div class="empty"><div class="big">&#10003;</div>Nenhum cliente encontrado com os filtros atuais.</div>';
+  } else {
+    document.getElementById('list').innerHTML = clientes.map(([nome,ps])=>{
+      ps.sort((a,b)=>a.venc.localeCompare(b.venc));
+      const cels=[...new Set(ps.map(p=>p.centro))];
+      const allAtr=ps.every(p=>p.status==='Atrasado');
+      const allRec=ps.every(p=>p.status==='A Receber');
+      const cls=allAtr?'atr':(allRec?'rec':'mix');
+      const maisAntiga=ps.filter(p=>p.status==='Atrasado').map(p=>p.venc).sort()[0];
+      let vartag='';
+      if(PREV[nome]!=null){
+        const d=CURTOT[nome]-PREV[nome];
+        vartag = d<-0.005?`<span class="down">&#9660; ${fmt(-d)} vs ${PREV_DATE}</span>`
+               : d>0.005?`<span class="up">&#9650; ${fmt(d)} vs ${PREV_DATE}</span>`
+               : `sem varia&ccedil;&atilde;o vs ${PREV_DATE}`;
+      } else { vartag=`<span class="pill novo">novo</span>`; }
+      const meta=[cels.join(' · '), maisAntiga?('mais antiga '+fmtD(maisAntiga)+' ('+dias(maisAntiga)+' dias)'):null, vartag].filter(Boolean).join(' &bull; ');
+      const linhas=ps.map(p=>{
+        const d=dias(p.venc);
+        return `<tr><td>${esc(p.doc)||'&mdash;'}</td><td>${fmtD(p.venc)}</td>
+          <td>${p.status==='Atrasado'?`<span class="atraso">${d>0?d+' dias':'vence hoje'}</span>`:'&mdash;'}</td>
+          <td><span class="pill ${p.status==='Atrasado'?'atr':'rec'}">${p.status}</span></td>
+          <td><span class="pill cel">${esc(p.centro)}</span></td>
+          <td>${esc(p.unidade)||'&mdash;'}</td><td class="r">${fmt(p.valor)}</td></tr>`;
+      }).join('');
+      const k=esc(nome);
+      return `<div class="client${openSet.has(nome)?' open':''}" data-k="${k}">
+        <div class="chead" role="button" tabindex="0">
+          <span class="caret">&#9654;</span>
+          <div><div class="cname">${k}</div><div class="cmeta">${meta}</div></div>
+          <div class="cqtd">${ps.length} parcela${ps.length>1?'s':''}</div>
+          <div class="ctotal ${cls}">${fmt(sum(ps))}</div>
+        </div>
+        <div class="cbody"><table class="parc">
+          <thead><tr><th>N&ordm; Doc</th><th>Vencimento</th><th>Atraso</th><th>Situa&ccedil;&atilde;o</th><th>C&eacute;lula</th><th>Unid.</th><th class="r">Valor</th></tr></thead>
+          <tbody>${linhas}</tbody>
+          <tfoot><tr><td colspan="6" style="font-weight:700;text-align:right;border-bottom:none">Total</td><td class="r" style="font-weight:800;border-bottom:none">${fmt(sum(ps))}</td></tr></tfoot>
+        </table></div></div>`;
+    }).join('')
+    + `<div class="chead" style="cursor:default;background:var(--pink-soft)"><span></span><div class="cname">Total &mdash; ${clientes.length} cliente${clientes.length>1?'s':''}, ${rows.length} parcela${rows.length>1?'s':''}</div><div></div><div class="ctotal mix">${fmt(totalLista)}</div></div>`;
+  }
+  document.querySelectorAll('#list .client .chead').forEach(el=>{
+    const t=()=>{
+      const c=el.parentElement; c.classList.toggle('open');
+      const nome=c.dataset.k;
+      if(c.classList.contains('open')) openSet.add(nome); else openSet.delete(nome);
+    };
+    el.onclick=t;
+    el.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();t();}};
+  });
+
+  /* ---- gráfico mês a mês (segue todos os filtros) ---- */
+  renderMes(rows);
+
+  /* ---- total por célula ---- */
+  const base=DATA.filter(x =>
+    (!fStatus || x.status===fStatus) &&
+    (!fQ || x.cliente.toLowerCase().includes(fQ)));
+  const byCel={};
+  base.forEach(x=>{ (byCel[x.centro]=byCel[x.centro]||{atr:0,rec:0,n:0}); const b=byCel[x.centro]; b[x.status==='Atrasado'?'atr':'rec']+=x.valor; b.n++; });
+  const cels=Object.entries(byCel).sort((a,b)=>(b[1].atr+b[1].rec)-(a[1].atr+a[1].rec));
+  const mx=Math.max(1,...cels.map(([,v])=>v.atr+v.rec));
+  document.getElementById('celsub').textContent =
+    (fStatus? (fStatus==='Atrasado'?'Somente atrasados':'Somente a receber') : 'Atrasados + a receber')
+    + (fQ?' · busca ativa':'') + ` — total ${fmt(base.length?sum(base):0)}`;
+  document.getElementById('obars').innerHTML = cels.map(([c,v])=>{
+    return `<div class="obar${c===fCel?' sel':''}" data-cel="${esc(c)}" title="${esc(c)} — Atrasado ${fmt(v.atr)} · A Receber ${fmt(v.rec)} · ${v.n} parcela(s)">
+      <span class="nm">${esc(c)}</span>
+      <span class="trk">${v.atr?`<span class="seg2 atr" style="width:${v.atr/mx*100}%"></span>`:''}${v.rec?`<span class="seg2 rec" style="width:${v.rec/mx*100}%"></span>`:''}</span>
+      <span class="tot">${fmt(v.atr+v.rec)}</span></div>`;
+  }).join('') || '<div style="color:var(--muted);font-size:13px">Nada encontrado.</div>';
+  document.querySelectorAll('.obar').forEach(el=>el.onclick=()=>{
+    fCel = (fCel===el.dataset.cel) ? '' : el.dataset.cel; render();
+  });
+}
+const MESES=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+function renderMes(rows){
+  const sub=document.getElementById('mesSub');
+  sub.textContent=(fStatus?(fStatus==='Atrasado'?'Somente atrasados':'Somente a receber'):'Atrasados + a receber')
+    +(fCel?' · '+fCel:'')+(fQ?' · busca ativa':'')+' — valor por mês de vencimento';
+  document.getElementById('mesSum').textContent=rows.length?fmt(sum(rows)):fmt(0);
+  const el=document.getElementById('chartMes');
+  if(!rows.length){el.innerHTML='<div style="color:var(--muted);font-size:13px;padding:20px 0">Nada encontrado.</div>';return;}
+  /* meses contínuos do menor ao maior vencimento */
+  const ym=s=>s.slice(0,7);
+  const keys=rows.map(r=>ym(r.venc)).sort();
+  const first=keys[0], last=keys[keys.length-1];
+  const months=[]; let [y,m]=first.split('-').map(Number);
+  const [ly,lm]=last.split('-').map(Number);
+  while(y<ly || (y===ly && m<=lm)){ months.push(y+'-'+String(m).padStart(2,'0')); m++; if(m>12){m=1;y++;} }
+  const agg={}; months.forEach(k=>agg[k]={atr:0,rec:0,n:0});
+  rows.forEach(r=>{const a=agg[ym(r.venc)];a[r.status==='Atrasado'?'atr':'rec']+=r.valor;a.n++;});
+  const mx=Math.max(...months.map(k=>agg[k].atr+agg[k].rec));
+  /* dimensões */
+  const W=Math.max(640,el.clientWidth||900), H=230, padL=8, padR=8, padT=26, padB=26;
+  const iw=W-padL-padR, ih=H-padT-padB;
+  const n=months.length, slot=iw/n, bw=Math.min(46,Math.max(14,slot*0.55));
+  /* gridlines: 3 linhas */
+  const ticks=[0.25,0.5,0.75,1].map(f=>f*mx);
+  let svg=`<svg width="100%" viewBox="0 0 ${W} ${H}" style="display:block" role="img" aria-label="Valor em aberto por mês de vencimento">`;
+  ticks.forEach(t=>{const yy=padT+ih-(t/mx)*ih;
+    svg+=`<line x1="${padL}" x2="${W-padR}" y1="${yy}" y2="${yy}" stroke="#eee6e2" stroke-width="1"/>`;});
+  const fmtK=v=>v>=1000?('R$ '+(v/1000).toLocaleString('pt-BR',{maximumFractionDigits:1})+' mil'):fmt(v);
+  months.forEach((k,i)=>{
+    const a=agg[k], tot=a.atr+a.rec;
+    const x=padL+i*slot+(slot-bw)/2;
+    const hA=tot?(a.atr/mx)*ih:0, hR=tot?(a.rec/mx)*ih:0;
+    const yR=padT+ih-hR, yA=yR-(hR>0&&hA>0?2:0)-hA; /* 2px de vão entre segmentos */
+    const [yy,mm]=k.split('-');
+    const lab=MESES[+mm-1]+'/'+yy.slice(2);
+    svg+=`<g class="mbar" data-k="${k}" data-lab="${lab}" data-atr="${a.atr}" data-rec="${a.rec}" data-n="${a.n}">`;
+    if(hR>0) svg+=`<rect x="${x}" y="${yR}" width="${bw}" height="${Math.max(hR,2)}" rx="${hA>0?0:4}" fill="var(--blue)"/>`;
+    if(hA>0) svg+=`<rect x="${x}" y="${yA}" width="${bw}" height="${Math.max(hA,2)}" rx="4" fill="var(--red)"/>`;
+    if(tot>0) svg+=`<text x="${x+bw/2}" y="${(hA>0?yA:yR)-6}" text-anchor="middle" font-size="10.5" font-weight="700" fill="#181018">${fmtK(tot)}</text>`;
+    svg+=`<rect x="${padL+i*slot}" y="${padT-14}" width="${slot}" height="${ih+14}" fill="transparent"/>`;
+    svg+=`<text x="${x+bw/2}" y="${H-8}" text-anchor="middle" font-size="11" fill="#7a6f78">${lab}</text></g>`;
+  });
+  svg+=`<line x1="${padL}" x2="${W-padR}" y1="${padT+ih}" y2="${padT+ih}" stroke="#d9cfc9" stroke-width="1"/></svg>`;
+  el.innerHTML=svg;
+  const tip=document.getElementById('tip');
+  el.querySelectorAll('.mbar').forEach(g=>{
+    g.addEventListener('mousemove',e=>{
+      const atr=+g.dataset.atr, rec=+g.dataset.rec;
+      tip.innerHTML=`<b>${g.dataset.lab}</b> · ${g.dataset.n} parcela(s)<br>Atrasado: ${fmt(atr)}<br>A receber: ${fmt(rec)}<br>Total: ${fmt(atr+rec)}`;
+      tip.style.opacity=1;
+      tip.style.left=Math.min(e.clientX+14,window.innerWidth-230)+'px';
+      tip.style.top=(e.clientY+14)+'px';
+    });
+    g.addEventListener('mouseleave',()=>tip.style.opacity=0);
+  });
+}
+/* ---- card de variação (base completa, não segue filtros) ---- */
+(function(){
+  const caiu=[], subiu=[], novos=[];
+  Object.keys(CURTOT).forEach(n=>{
+    if(PREV[n]==null){ novos.push({n, v:CURTOT[n]}); return; }
+    const d=CURTOT[n]-PREV[n];
+    if(d<-0.005) caiu.push({n, prev:PREV[n], now:CURTOT[n], d});
+    else if(d>0.005) subiu.push({n, prev:PREV[n], now:CURTOT[n], d});
+  });
+  caiu.sort((a,b)=>a.d-b.d); subiu.sort((a,b)=>b.d-a.d); novos.sort((a,b)=>b.v-a.v);
+  const goneTot=GONE.reduce((s,g)=>s+g.valor,0);
+  const caiuTot=caiu.reduce((s,c)=>s-c.d,0);
+  const subiuTot=subiu.reduce((s,c)=>s+c.d,0)+novos.reduce((s,c)=>s+c.v,0);
+  document.getElementById('varSub').innerHTML =
+    `Compara o total em aberto de cada cliente com a atualiza&ccedil;&atilde;o de ${PREV_DATE} &mdash; ` +
+    `<span class="down">&#9660; ${fmt(goneTot+caiuTot)} sa&iacute;ram ou ca&iacute;ram</span> &middot; <span class="up">&#9650; ${fmt(subiuTot)} novos ou subiram</span>`;
+  const row=(nm,val)=>`<div class="vrow"><span class="vn" title="${esc(nm)}">${esc(nm)}</span><span class="vv">${val}</span></div>`;
+  let h='';
+  h+=`<div class="vcol"><h3>Sa&iacute;ram do relat&oacute;rio (${GONE.length})</h3>`
+    + (GONE.length? GONE.map(g=>row(g.nome,`<span class="down">&#9660; ${fmt(g.valor)}</span>`)).join('')
+        + `<div class="vtot"><span>Total</span><span class="down">&#9660; ${fmt(goneTot)}</span></div>`
+      : '<div class="csub">Nenhum</div>') + `</div>`;
+  h+=`<div class="vcol"><h3>Ca&iacute;ram (${caiu.length})</h3>`
+    + (caiu.length? caiu.map(c=>row(c.n,`${fmt(c.prev)} &rarr; ${fmt(c.now)} <span class="down">&#9660; ${fmt(-c.d)}</span>`)).join('')
+        + `<div class="vtot"><span>Total</span><span class="down">&#9660; ${fmt(caiuTot)}</span></div>`
+      : '<div class="csub">Nenhum</div>') + `</div>`;
+  h+=`<div class="vcol"><h3>Subiram ou novos (${subiu.length+novos.length})</h3>`
+    + ((subiu.length+novos.length)?
+        subiu.map(c=>row(c.n,`${fmt(c.prev)} &rarr; ${fmt(c.now)} <span class="up">&#9650; ${fmt(c.d)}</span>`)).join('')
+        + novos.map(c=>row(c.n,`<span class="up">&#9650; ${fmt(c.v)}</span> <span class="pill novo">novo</span>`)).join('')
+        + `<div class="vtot"><span>Total</span><span class="up">&#9650; ${fmt(subiuTot)}</span></div>`
+      : '<div class="csub">Nenhum</div>') + `</div>`;
+  document.getElementById('varBox').innerHTML=h;
+})();
+render();
+window.addEventListener('resize',()=>renderMes(filtered()));
+</script>
+</body>
+</html>
