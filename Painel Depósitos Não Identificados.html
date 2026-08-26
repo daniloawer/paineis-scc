@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel de Depósitos Não Identificados — SCC</title>
+<style>
+:root{
+  --pink:#C2897B; --pink-dark:#8f574a; --pink-soft:#f6ece8; --pink-line:#e7cfc7;
+  --ink:#181018; --black:#0d0d0d; --muted:#7a6f78; --line:#ece6ea;
+  --red:#d11a2a; --bg:#f5f1f4; --card:#ffffff;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--ink);font-size:14px}
+header{background:linear-gradient(120deg,#0d0d0d 0%,#231512 55%,#5a352c 100%);color:#fff;padding:24px 30px;border-bottom:4px solid var(--pink)}
+.brand{display:flex;align-items:center;gap:14px}
+.logo{font-weight:800;font-size:26px;letter-spacing:1px;background:var(--pink);color:#fff;padding:6px 12px;border-radius:8px;line-height:1}
+header h1{margin:0;font-size:21px;font-weight:700}
+header .sub{font-size:14px;margin-top:8px;color:#ecd6cf}
+header .sub b{color:#fff}
+.wrap{max-width:1100px;margin:0 auto;padding:0 30px 70px}
+.kpis{display:flex;gap:16px;flex-wrap:wrap;margin:-32px 0 22px}
+.kpi{background:var(--card);border-radius:14px;padding:16px 20px;box-shadow:0 6px 20px rgba(24,16,24,.10);flex:1;min-width:175px;border-top:3px solid var(--pink)}
+.kpi.black{border-top-color:var(--black)}
+.kpi.red{border-top-color:var(--red)}
+.kpi .lbl{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;font-weight:700}
+.kpi .val{font-size:25px;font-weight:800;margin-top:5px;color:var(--ink)}
+.kpi.pink .val{color:var(--pink-dark)}
+.kpi.red .val{color:var(--red)}
+.kpi .hint{font-size:11.5px;color:var(--muted);margin-top:4px}
+.card{background:var(--card);border-radius:14px;box-shadow:0 6px 20px rgba(24,16,24,.07);padding:18px 22px;margin-bottom:22px}
+.card h2{margin:0 0 2px;font-size:16px;font-weight:800;color:var(--ink)}
+.card .csub{font-size:12.5px;color:var(--muted);margin-bottom:12px}
+.toolbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+.search{flex:1;min-width:220px;display:flex}
+.search input{flex:1;padding:10px 14px;border:1px solid var(--line);border-radius:9px;font-size:14px;outline:none;font-family:inherit}
+.search input:focus{border-color:var(--pink);box-shadow:0 0 0 3px rgba(143,87,74,.16)}
+select{padding:10px 12px;border:1px solid var(--line);border-radius:9px;font-size:13px;font-weight:700;color:var(--pink-dark);background:#fff;cursor:pointer;font-family:inherit}
+select:focus{outline:none;border-color:var(--pink);box-shadow:0 0 0 3px rgba(143,87,74,.16)}
+.count-note{font-size:12px;color:var(--muted);font-weight:700;white-space:nowrap}
+table.parc{width:100%;border-collapse:collapse;font-size:13.5px}
+table.parc th{text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);padding:8px 10px;border-bottom:2px solid var(--pink-line);cursor:pointer;user-select:none;white-space:nowrap;font-weight:700}
+table.parc th:hover{color:var(--pink-dark)}
+table.parc th .arrow{font-size:9px;margin-left:4px;color:var(--pink-dark)}
+table.parc td{padding:10px;border-bottom:1px solid #f3e8ef;vertical-align:top}
+table.parc tbody tr:hover{background:var(--pink-soft)}
+table.parc td.r,table.parc th.r{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+td.valcol{font-weight:800;color:var(--pink-dark)}
+td.datecol{white-space:nowrap;font-variant-numeric:tabular-nums}
+td.desc{color:var(--ink);line-height:1.45}
+td.desc .doc{color:var(--muted);font-size:11.5px;margin-top:3px}
+.pill{display:inline-block;background:#f2eae6;border-radius:20px;padding:2px 9px;font-size:11px;font-weight:700;color:#5a4f56;white-space:nowrap}
+.pill.atraso{background:#fdecee;color:var(--red)}
+mark{background:var(--pink-soft);color:var(--pink-dark);border-radius:3px;padding:0 1px;font-weight:700}
+tfoot td{padding:12px 10px;font-weight:800;border-top:2px solid var(--pink-line);font-variant-numeric:tabular-nums;color:var(--ink)}
+tfoot td.r{color:var(--pink-dark)}
+.empty{padding:60px 20px;text-align:center;color:var(--muted)}
+.empty .big{font-size:44px;margin-bottom:10px;color:var(--pink)}
+.foot{font-size:12px;color:var(--muted);margin-top:8px;text-align:center;line-height:1.6}
+@media print{
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);margin-top:14px}
+  .kpi{min-width:0;box-shadow:none;border:1px solid var(--line);border-top:3px solid var(--pink)}
+  .kpi.black{border-top-color:var(--black)} .kpi.red{border-top-color:var(--red)}
+  .card{box-shadow:none;border:1px solid var(--line)}
+  .toolbar{display:none}
+  table.parc tr{page-break-inside:avoid}
+}
+@media(max-width:700px){
+  table.parc th:nth-child(4),table.parc td:nth-child(4){display:none}
+  .wrap{padding:0 16px 50px}
+  header{padding:20px 16px}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><span class="logo">SCC</span>
+    <div><h1>Painel de Dep&oacute;sitos N&atilde;o Identificados</h1>
+    <div class="sub">Dep&oacute;sitos sem t&iacute;tulo correspondente (sem concilia&ccedil;&atilde;o) &nbsp;&bull;&nbsp; posi&ccedil;&atilde;o em <b>12/08/2026</b> &nbsp;&bull;&nbsp; fonte: <b>Dep&oacute;sitos n&atilde;o identificados 12-08.xlsx</b></div></div>
+  </div>
+</header>
+<div class="wrap">
+  <div class="kpis">
+    <div class="kpi pink"><div class="lbl">Valor pendente</div><div class="val" id="kTotal">—</div><div class="hint" id="kTotalHint"></div></div>
+    <div class="kpi black"><div class="lbl">Dep&oacute;sitos</div><div class="val" id="kCount">—</div><div class="hint">sem cliente identificado</div></div>
+    <div class="kpi red"><div class="lbl">Mais antigo</div><div class="val" id="kOldest">—</div><div class="hint" id="kOldestHint"></div></div>
+    <div class="kpi"><div class="lbl">Maior valor</div><div class="val" id="kMax">—</div><div class="hint" id="kMaxHint"></div></div>
+  </div>
+
+  <div class="card">
+    <h2>Dep&oacute;sitos pendentes de identifica&ccedil;&atilde;o</h2>
+    <div class="csub">A descri&ccedil;&atilde;o (Obs. Excel) &eacute; a melhor refer&ecirc;ncia para localizar o cliente que pagou. Clique nos cabe&ccedil;alhos para ordenar.</div>
+    <div class="toolbar">
+      <div class="search"><input type="search" id="q" placeholder="Buscar por nome, CPF, valor ou data…" aria-label="Buscar"></div>
+      <select id="yearFilter" aria-label="Filtrar por ano"><option value="">Todos os anos</option></select>
+      <span class="count-note" id="countNote"></span>
+    </div>
+    <table class="parc" id="tbl">
+      <thead>
+        <tr>
+          <th data-key="baixa">Dt. Baixa <span class="arrow" id="ar-baixa">▼</span></th>
+          <th data-key="obs">Descri&ccedil;&atilde;o (Obs. Excel) <span class="arrow" id="ar-obs"></span></th>
+          <th data-key="valor" class="r">Valor <span class="arrow" id="ar-valor"></span></th>
+          <th data-key="idade">Pendente h&aacute; <span class="arrow" id="ar-idade"></span></th>
+        </tr>
+      </thead>
+      <tbody id="rows"></tbody>
+      <tfoot>
+        <tr><td colspan="2">Total exibido</td><td class="r" id="footTotal"></td><td></td></tr>
+      </tfoot>
+    </table>
+    <div class="empty" id="empty" style="display:none"><div class="big">&#128269;</div>Nenhum dep&oacute;sito corresponde &agrave; busca.</div>
+  </div>
+
+  <div class="foot">
+    Conta cont&aacute;bil: Dep&oacute;sitos N&atilde;o Identificados &bull; colunas extra&iacute;das da planilha: Obs. Excel (K), Valor (F) e Dt. Baixa (H).<br>
+    Este painel &eacute; uma fotografia da planilha na data acima &mdash; n&atilde;o se atualiza sozinho quando a planilha muda.
+  </div>
+</div>
+
+<script>
+const DATA = [
+  {doc:"94566", tipo:"LB",  valor:60.00,   baixa:"2025-05-22", obs:"PIX TRANSF  LARISSA22/05"},
+  {doc:"94567", tipo:"DEP", valor:60.00,   baixa:"2025-06-23", obs:"PIX TRANSF  Larissa23/06"},
+  {doc:"94568", tipo:"DEP", valor:60.00,   baixa:"2025-07-28", obs:"PIX TRANSF  Larissa28/07"},
+  {doc:"94569", tipo:"DEP", valor:161.51,  baixa:"2025-07-31", obs:"PIX TRANSF  PANIFIC31/07"},
+  {doc:"94570", tipo:"DEP", valor:22.13,   baixa:"2025-08-22", obs:"PIX TRANSF  LENISE 22/08"},
+  {doc:"94571", tipo:"DEP", valor:60.00,   baixa:"2025-08-26", obs:"PIX TRANSF  Larissa26/08"},
+  {doc:"46844", tipo:"WEB", valor:513.08,  baixa:"2025-11-25", obs:"TED 104.0981 - RESGATE JUDICIAL CEF"},
+  {doc:"94575", tipo:"DEP", valor:500.00,  baixa:"2026-01-28", obs:"PIX RECEBIDO MARINA 28/01 MARINA CASTRECHINI FORTUNATO 357.616.788-96"},
+  {doc:"69518", tipo:"PIX", valor:400.00,  baixa:"2026-02-13", obs:"DEP. RONY CONDI COSTA (491.371.278-02) - 13/02"},
+  {doc:"69521", tipo:"PIX", valor:200.00,  baixa:"2026-02-13", obs:"13/02/26 - PIX GABRIEL NADER FURTADO (509.816.008-16)"},
+  {doc:"94576", tipo:"DEP", valor:200.00,  baixa:"2026-03-11", obs:"PIX RECEBIDO GABRIEL11/03 GABRIEL NADER FURTADO 509.816.008-16"},
+  {doc:"94577", tipo:"DEP", valor:416.65,  baixa:"2026-03-25", obs:"PIX RECEBIDO LUIS FE25/03 LUIS FERNANDO DOS SANTOS 213.793.688-71"},
+  {doc:"94578", tipo:"DEP", valor:300.00,  baixa:"2026-03-27", obs:"PIX RECEBIDO MÃRCIA 27/03 MÃRCIA REGINA SOUZA 095.125.978-45"},
+  {doc:"94579", tipo:"DEP", valor:119.26,  baixa:"2026-05-28", obs:"TED 104.0000WASHINGTON L"},
+  {doc:"94580", tipo:"DEP", valor:4184.77, baixa:"2026-06-03", obs:"TED 104.0000SCC SIL CARV"}
+];
+
+const brl = v => v.toLocaleString('pt-BR', {style:'currency', currency:'BRL'});
+const fmtDate = iso => { const [y,m,d] = iso.split('-'); return `${d}/${m}/${y}`; };
+const today = new Date(); today.setHours(0,0,0,0);
+const daysSince = iso => Math.round((today - new Date(iso + 'T00:00:00')) / 86400000);
+DATA.forEach(r => r.idade = daysSince(r.baixa));
+
+let sortKey = 'baixa', sortAsc = false;
+const $ = id => document.getElementById(id);
+
+// KPIs
+const total = DATA.reduce((s,r)=>s+r.valor,0);
+$('kTotal').textContent = brl(total);
+$('kTotalHint').textContent = 'soma dos ' + DATA.length + ' lançamentos';
+$('kCount').textContent = DATA.length;
+const oldest = [...DATA].sort((a,b)=>a.baixa.localeCompare(b.baixa))[0];
+$('kOldest').textContent = oldest.idade + ' dias';
+$('kOldestHint').textContent = 'desde ' + fmtDate(oldest.baixa);
+const biggest = [...DATA].sort((a,b)=>b.valor-a.valor)[0];
+$('kMax').textContent = brl(biggest.valor);
+$('kMaxHint').textContent = biggest.obs.slice(0,26) + (biggest.obs.length>26?'…':'');
+
+// year filter
+[...new Set(DATA.map(r=>r.baixa.slice(0,4)))].sort().forEach(y=>{
+  const o = document.createElement('option'); o.value = y; o.textContent = y;
+  $('yearFilter').appendChild(o);
+});
+
+function escHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function highlight(text, q){
+  const safe = escHtml(text);
+  if(!q) return safe;
+  const rx = new RegExp('(' + q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + ')','gi');
+  return safe.replace(rx,'<mark>$1</mark>');
+}
+
+function currentRows(){
+  const q = $('q').value.trim();
+  const yr = $('yearFilter').value;
+  let rows = DATA.filter(r => {
+    if (yr && r.baixa.slice(0,4) !== yr) return false;
+    if (!q) return true;
+    const hay = (r.obs + ' ' + r.doc + ' ' + r.tipo + ' ' + fmtDate(r.baixa) + ' ' + r.valor.toFixed(2).replace('.',',')).toLowerCase();
+    return hay.includes(q.toLowerCase());
+  });
+  rows.sort((a,b)=>{
+    let va = a[sortKey], vb = b[sortKey];
+    if (typeof va === 'string') { va = va.toLowerCase(); vb = vb.toLowerCase(); }
+    return (va < vb ? -1 : va > vb ? 1 : 0) * (sortAsc ? 1 : -1);
+  });
+  return rows;
+}
+
+function render(){
+  const q = $('q').value.trim();
+  const rows = currentRows();
+  $('rows').innerHTML = rows.map(r => `
+    <tr>
+      <td class="datecol">${fmtDate(r.baixa)}</td>
+      <td class="desc">${highlight(r.obs, q)}<div class="doc">${r.tipo} &bull; Doc ${r.doc}</div></td>
+      <td class="r valcol">${brl(r.valor)}</td>
+      <td><span class="pill${r.idade > 180 ? ' atraso' : ''}">${r.idade} dias</span></td>
+    </tr>`).join('');
+  $('empty').style.display = rows.length ? 'none' : 'block';
+  document.querySelector('#tbl tfoot').style.display = rows.length ? '' : 'none';
+  document.querySelector('#tbl thead').style.display = rows.length ? '' : 'none';
+  $('footTotal').textContent = brl(rows.reduce((s,r)=>s+r.valor,0));
+  $('countNote').textContent = rows.length + ' de ' + DATA.length + ' depósitos';
+  ['baixa','obs','valor','idade'].forEach(k => {
+    $('ar-'+k).textContent = k === sortKey ? (sortAsc ? '▲' : '▼') : '';
+  });
+}
+
+document.querySelectorAll('#tbl thead th').forEach(th => {
+  th.addEventListener('click', () => {
+    const k = th.dataset.key;
+    if (sortKey === k) sortAsc = !sortAsc; else { sortKey = k; sortAsc = (k === 'obs'); }
+    render();
+  });
+});
+$('q').addEventListener('input', render);
+$('yearFilter').addEventListener('change', render);
+render();
+</script>
+</body>
+</html>
