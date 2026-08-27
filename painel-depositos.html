@@ -2,6 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
+<meta name="robots" content="noindex, nofollow">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Painel de Depósitos Não Identificados — SCC</title>
 <style>
@@ -12,213 +13,179 @@
 }
 *{box-sizing:border-box}
 body{margin:0;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--ink);font-size:14px}
-header{background:linear-gradient(120deg,#0d0d0d 0%,#231512 55%,#5a352c 100%);color:#fff;padding:24px 30px;border-bottom:4px solid var(--pink)}
+header{background:linear-gradient(120deg,#0d0d0d 0%,#231512 55%,#5a352c 100%);color:#fff;padding:24px 30px 62px;border-bottom:4px solid var(--pink)}
 .brand{display:flex;align-items:center;gap:14px}
 .logo{font-weight:800;font-size:26px;letter-spacing:1px;background:var(--pink);color:#fff;padding:6px 12px;border-radius:8px;line-height:1}
 header h1{margin:0;font-size:21px;font-weight:700}
 header .sub{font-size:14px;margin-top:8px;color:#ecd6cf}
 header .sub b{color:#fff}
-.wrap{max-width:1100px;margin:0 auto;padding:0 30px 70px}
-.kpis{display:flex;gap:16px;flex-wrap:wrap;margin:-32px 0 22px}
-.kpi{background:var(--card);border-radius:14px;padding:16px 20px;box-shadow:0 6px 20px rgba(24,16,24,.10);flex:1;min-width:175px;border-top:3px solid var(--pink)}
-.kpi.black{border-top-color:var(--black)}
-.kpi.red{border-top-color:var(--red)}
+.wrap{max-width:1300px;margin:0 auto;padding:0 30px 70px}
+.kpis{display:flex;gap:16px;flex-wrap:wrap;margin:-38px 0 22px}
+.kpi{background:var(--card);border-radius:14px;padding:16px 20px;box-shadow:0 6px 20px rgba(24,16,24,.10);flex:1;min-width:200px;border-top:3px solid var(--pink)}
 .kpi .lbl{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;font-weight:700}
-.kpi .val{font-size:25px;font-weight:800;margin-top:5px;color:var(--ink)}
-.kpi.pink .val{color:var(--pink-dark)}
-.kpi.red .val{color:var(--red)}
-.kpi .hint{font-size:11.5px;color:var(--muted);margin-top:4px}
+.kpi .val{font-size:25px;font-weight:800;margin-top:5px;font-variant-numeric:tabular-nums;color:var(--pink-dark)}
+.kpi .det{font-size:12px;color:var(--muted);margin-top:4px}
 .card{background:var(--card);border-radius:14px;box-shadow:0 6px 20px rgba(24,16,24,.07);padding:18px 22px;margin-bottom:22px}
 .card h2{margin:0 0 2px;font-size:16px;font-weight:800;color:var(--ink)}
 .card .csub{font-size:12.5px;color:var(--muted);margin-bottom:12px}
-.toolbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
-.search{flex:1;min-width:220px;display:flex}
-.search input{flex:1;padding:10px 14px;border:1px solid var(--line);border-radius:9px;font-size:14px;outline:none;font-family:inherit}
-.search input:focus{border-color:var(--pink);box-shadow:0 0 0 3px rgba(143,87,74,.16)}
-select{padding:10px 12px;border:1px solid var(--line);border-radius:9px;font-size:13px;font-weight:700;color:var(--pink-dark);background:#fff;cursor:pointer;font-family:inherit}
-select:focus{outline:none;border-color:var(--pink);box-shadow:0 0 0 3px rgba(143,87,74,.16)}
-.count-note{font-size:12px;color:var(--muted);font-weight:700;white-space:nowrap}
-table.parc{width:100%;border-collapse:collapse;font-size:13.5px}
-table.parc th{text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);padding:8px 10px;border-bottom:2px solid var(--pink-line);cursor:pointer;user-select:none;white-space:nowrap;font-weight:700}
-table.parc th:hover{color:var(--pink-dark)}
-table.parc th .arrow{font-size:9px;margin-left:4px;color:var(--pink-dark)}
-table.parc td{padding:10px;border-bottom:1px solid #f3e8ef;vertical-align:top}
-table.parc tbody tr:hover{background:var(--pink-soft)}
-table.parc td.r,table.parc th.r{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
-td.valcol{font-weight:800;color:var(--pink-dark)}
-td.datecol{white-space:nowrap;font-variant-numeric:tabular-nums}
-td.desc{color:var(--ink);line-height:1.45}
-td.desc .doc{color:var(--muted);font-size:11.5px;margin-top:3px}
-.pill{display:inline-block;background:#f2eae6;border-radius:20px;padding:2px 9px;font-size:11px;font-weight:700;color:#5a4f56;white-space:nowrap}
-.pill.atraso{background:#fdecee;color:var(--red)}
-mark{background:var(--pink-soft);color:var(--pink-dark);border-radius:3px;padding:0 1px;font-weight:700}
-tfoot td{padding:12px 10px;font-weight:800;border-top:2px solid var(--pink-line);font-variant-numeric:tabular-nums;color:var(--ink)}
-tfoot td.r{color:var(--pink-dark)}
-.empty{padding:60px 20px;text-align:center;color:var(--muted)}
-.empty .big{font-size:44px;margin-bottom:10px;color:var(--pink)}
-.foot{font-size:12px;color:var(--muted);margin-top:8px;text-align:center;line-height:1.6}
-@media print{
-  .kpis{display:grid;grid-template-columns:repeat(4,1fr);margin-top:14px}
-  .kpi{min-width:0;box-shadow:none;border:1px solid var(--line);border-top:3px solid var(--pink)}
-  .kpi.black{border-top-color:var(--black)} .kpi.red{border-top-color:var(--red)}
-  .card{box-shadow:none;border:1px solid var(--line)}
-  .toolbar{display:none}
-  table.parc tr{page-break-inside:avoid}
-}
-@media(max-width:700px){
-  table.parc th:nth-child(4),table.parc td:nth-child(4){display:none}
-  .wrap{padding:0 16px 50px}
-  header{padding:20px 16px}
-}
+.down{color:#1e7d46;font-weight:700}
+.up{color:var(--red);font-weight:700}
+.vpill{display:inline-block;border-radius:20px;padding:2px 9px;font-size:11px;font-weight:700}
+.vpill.pago{background:#e2f3e9;color:#1e7d46}
+.vpill.novo{background:#fff3d6;color:#8a6100}
+.vgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
+.vcol h3{margin:0 0 8px;font-size:11.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted)}
+.vrow{display:flex;justify-content:space-between;gap:10px;font-size:12.5px;padding:5px 0;border-bottom:1px solid #f3ece9}
+.vtot{display:flex;justify-content:space-between;font-size:12.5px;padding:6px 0;font-weight:800}
+table.dep{width:100%;border-collapse:collapse;font-size:13px}
+table.dep th{text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);padding:8px 10px;border-bottom:2px solid var(--pink-line)}
+table.dep td{padding:8px 10px;border-bottom:1px solid #f3e8ef;vertical-align:top}
+table.dep td.r,table.dep th.r{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+table.dep td.v{font-weight:800;color:var(--pink-dark)}
+.obs{font-size:12.5px;color:#6e3a2e}
+.tip{position:fixed;pointer-events:none;background:#0d0d0d;color:#fff;padding:7px 10px;border-radius:7px;font-size:12px;opacity:0;transition:opacity .1s;z-index:50;white-space:nowrap}
+.foot{font-size:12px;color:var(--muted);margin-top:8px;text-align:center}
 </style>
 </head>
 <body>
 <header>
   <div class="brand"><span class="logo">SCC</span>
     <div><h1>Painel de Dep&oacute;sitos N&atilde;o Identificados</h1>
-    <div class="sub">Dep&oacute;sitos sem t&iacute;tulo correspondente (sem concilia&ccedil;&atilde;o) &nbsp;&bull;&nbsp; posi&ccedil;&atilde;o em <b>12/08/2026</b> &nbsp;&bull;&nbsp; fonte: <b>Dep&oacute;sitos n&atilde;o identificados 12-08.xlsx</b></div></div>
+      <div class="sub">Dep&oacute;sitos sem t&iacute;tulo correspondente (sem concilia&ccedil;&atilde;o) &bull; &Uacute;ltima atualiza&ccedil;&atilde;o: <b>12/08/2026</b></div></div>
   </div>
 </header>
 <div class="wrap">
-  <div class="kpis">
-    <div class="kpi pink"><div class="lbl">Valor pendente</div><div class="val" id="kTotal">—</div><div class="hint" id="kTotalHint"></div></div>
-    <div class="kpi black"><div class="lbl">Dep&oacute;sitos</div><div class="val" id="kCount">—</div><div class="hint">sem cliente identificado</div></div>
-    <div class="kpi red"><div class="lbl">Mais antigo</div><div class="val" id="kOldest">—</div><div class="hint" id="kOldestHint"></div></div>
-    <div class="kpi"><div class="lbl">Maior valor</div><div class="val" id="kMax">—</div><div class="hint" id="kMaxHint"></div></div>
+  <div class="kpis" id="kpis"></div>
+
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px">
+      <div><h2>Evolu&ccedil;&atilde;o semanal do total sem identifica&ccedil;&atilde;o</h2><div class="csub" id="weekSub"></div></div>
+      <div id="weekDelta"></div>
+    </div>
+    <div id="chartWeek" style="width:100%;overflow-x:auto"></div>
   </div>
 
   <div class="card">
-    <h2>Dep&oacute;sitos pendentes de identifica&ccedil;&atilde;o</h2>
-    <div class="csub">A descri&ccedil;&atilde;o (Obs. Excel) &eacute; a melhor refer&ecirc;ncia para localizar o cliente que pagou. Clique nos cabe&ccedil;alhos para ordenar.</div>
-    <div class="toolbar">
-      <div class="search"><input type="search" id="q" placeholder="Buscar por nome, CPF, valor ou data…" aria-label="Buscar"></div>
-      <select id="yearFilter" aria-label="Filtrar por ano"><option value="">Todos os anos</option></select>
-      <span class="count-note" id="countNote"></span>
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px">
+      <div><h2>Evolu&ccedil;&atilde;o m&ecirc;s a m&ecirc;s</h2><div class="csub">Valor dos dep&oacute;sitos em aberto por m&ecirc;s em que entraram na conta</div></div>
+      <div style="text-align:right"><div style="font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;font-weight:700">Somat&oacute;rio</div><div id="mesSum" style="font-size:19px;font-weight:800;color:var(--pink-dark)">&mdash;</div></div>
     </div>
-    <table class="parc" id="tbl">
-      <thead>
-        <tr>
-          <th data-key="baixa">Dt. Baixa <span class="arrow" id="ar-baixa">▼</span></th>
-          <th data-key="obs">Descri&ccedil;&atilde;o (Obs. Excel) <span class="arrow" id="ar-obs"></span></th>
-          <th data-key="valor" class="r">Valor <span class="arrow" id="ar-valor"></span></th>
-          <th data-key="idade">Pendente h&aacute; <span class="arrow" id="ar-idade"></span></th>
-        </tr>
-      </thead>
-      <tbody id="rows"></tbody>
-      <tfoot>
-        <tr><td colspan="2">Total exibido</td><td class="r" id="footTotal"></td><td></td></tr>
-      </tfoot>
-    </table>
-    <div class="empty" id="empty" style="display:none"><div class="big">&#128269;</div>Nenhum dep&oacute;sito corresponde &agrave; busca.</div>
+    <div id="chartMes" style="width:100%;overflow-x:auto"></div>
   </div>
 
-  <div class="foot">
-    Conta cont&aacute;bil: Dep&oacute;sitos N&atilde;o Identificados &bull; colunas extra&iacute;das da planilha: Obs. Excel (K), Valor (F) e Dt. Baixa (H).<br>
-    Este painel &eacute; uma fotografia da planilha na data acima &mdash; n&atilde;o se atualiza sozinho quando a planilha muda.
+  <div class="card">
+    <h2>Varia&ccedil;&atilde;o desde a &uacute;ltima atualiza&ccedil;&atilde;o (03/08)</h2>
+    <div class="csub" id="varSub"></div>
+    <div class="vgrid" id="varBox"></div>
   </div>
+
+  <div class="card">
+    <h2>Dep&oacute;sitos aguardando identifica&ccedil;&atilde;o</h2>
+    <div class="csub">Do maior para o menor &mdash; a coluna Observa&ccedil;&atilde;o &eacute; a principal pista para identificar o cliente pagador</div>
+    <table class="dep"><thead><tr><th>Data</th><th>Tipo</th><th>N&ordm; Doc</th><th>Observa&ccedil;&atilde;o (extrato)</th><th class="r">Valor</th></tr></thead><tbody id="tbody"></tbody>
+    <tfoot><tr><td colspan="4" style="font-weight:700;text-align:right;border-bottom:none">Total</td><td class="r v" style="border-bottom:none" id="tfoot"></td></tr></tfoot></table>
+  </div>
+  <div class="foot">Painel est&aacute;tico &mdash; regenerado a cada atualiza&ccedil;&atilde;o da planilha &bull; Fonte: conta "Dep&oacute;sitos N&atilde;o Identificados" no ADVwin+</div>
 </div>
-
+<div class="tip" id="tip"></div>
 <script>
-const DATA = [
-  {doc:"94566", tipo:"LB",  valor:60.00,   baixa:"2025-05-22", obs:"PIX TRANSF  LARISSA22/05"},
-  {doc:"94567", tipo:"DEP", valor:60.00,   baixa:"2025-06-23", obs:"PIX TRANSF  Larissa23/06"},
-  {doc:"94568", tipo:"DEP", valor:60.00,   baixa:"2025-07-28", obs:"PIX TRANSF  Larissa28/07"},
-  {doc:"94569", tipo:"DEP", valor:161.51,  baixa:"2025-07-31", obs:"PIX TRANSF  PANIFIC31/07"},
-  {doc:"94570", tipo:"DEP", valor:22.13,   baixa:"2025-08-22", obs:"PIX TRANSF  LENISE 22/08"},
-  {doc:"94571", tipo:"DEP", valor:60.00,   baixa:"2025-08-26", obs:"PIX TRANSF  Larissa26/08"},
-  {doc:"46844", tipo:"WEB", valor:513.08,  baixa:"2025-11-25", obs:"TED 104.0981 - RESGATE JUDICIAL CEF"},
-  {doc:"94575", tipo:"DEP", valor:500.00,  baixa:"2026-01-28", obs:"PIX RECEBIDO MARINA 28/01 MARINA CASTRECHINI FORTUNATO 357.616.788-96"},
-  {doc:"69518", tipo:"PIX", valor:400.00,  baixa:"2026-02-13", obs:"DEP. RONY CONDI COSTA (491.371.278-02) - 13/02"},
-  {doc:"69521", tipo:"PIX", valor:200.00,  baixa:"2026-02-13", obs:"13/02/26 - PIX GABRIEL NADER FURTADO (509.816.008-16)"},
-  {doc:"94576", tipo:"DEP", valor:200.00,  baixa:"2026-03-11", obs:"PIX RECEBIDO GABRIEL11/03 GABRIEL NADER FURTADO 509.816.008-16"},
-  {doc:"94577", tipo:"DEP", valor:416.65,  baixa:"2026-03-25", obs:"PIX RECEBIDO LUIS FE25/03 LUIS FERNANDO DOS SANTOS 213.793.688-71"},
-  {doc:"94578", tipo:"DEP", valor:300.00,  baixa:"2026-03-27", obs:"PIX RECEBIDO MÃRCIA 27/03 MÃRCIA REGINA SOUZA 095.125.978-45"},
-  {doc:"94579", tipo:"DEP", valor:119.26,  baixa:"2026-05-28", obs:"TED 104.0000WASHINGTON L"},
-  {doc:"94580", tipo:"DEP", valor:4184.77, baixa:"2026-06-03", obs:"TED 104.0000SCC SIL CARV"}
-];
+const P = {"HIST": [{"date": "2026-07-22", "label": "22/07", "n": 15, "total": 7257.4}, {"date": "2026-07-29", "label": "29/07", "n": 16, "total": 12257.4}, {"date": "2026-08-03", "label": "03/08", "n": 16, "total": 8007.4}, {"date": "2026-08-12", "label": "12/08", "n": 15, "total": 7257.4}], "ROWS": [{"tipodoc": "DEP", "doc": "94580", "valor": 4184.77, "baixa": "2026-06-03", "obs": "TED 104.0000SCC SIL CARV"}, {"tipodoc": "WEB", "doc": "46844", "valor": 513.08, "baixa": "2025-11-25", "obs": "TED 104.0981 - RESGATE JUDICIAL CEF"}, {"tipodoc": "DEP", "doc": "94575", "valor": 500.0, "baixa": "2026-01-28", "obs": "PIX RECEBIDO MARINA 28/01 MARINA CASTRECHINI FORTUNATO 357.616.788-96"}, {"tipodoc": "DEP", "doc": "94577", "valor": 416.65, "baixa": "2026-03-25", "obs": "PIX RECEBIDO LUIS FE25/03 LUIS FERNANDO DOS SANTOS 213.793.688-71"}, {"tipodoc": "PIX", "doc": "69518", "valor": 400.0, "baixa": "2026-02-13", "obs": "DEP. RONY CONDI COSTA (491.371.278-02) - 13/02"}, {"tipodoc": "DEP", "doc": "94578", "valor": 300.0, "baixa": "2026-03-27", "obs": "PIX RECEBIDO MÃRCIA 27/03 MÃRCIA REGINA SOUZA 095.125.978-45"}, {"tipodoc": "PIX", "doc": "69521", "valor": 200.0, "baixa": "2026-02-13", "obs": "13/02/26 - PIX GABRIEL NADER FURTADO (509.816.008-16)"}, {"tipodoc": "DEP", "doc": "94576", "valor": 200.0, "baixa": "2026-03-11", "obs": "PIX RECEBIDO GABRIEL11/03 GABRIEL NADER FURTADO 509.816.008-16"}, {"tipodoc": "DEP", "doc": "94569", "valor": 161.51, "baixa": "2025-07-31", "obs": "PIX TRANSF  PANIFIC31/07"}, {"tipodoc": "DEP", "doc": "94579", "valor": 119.26, "baixa": "2026-05-28", "obs": "TED 104.0000WASHINGTON L"}, {"tipodoc": "LB", "doc": "94566", "valor": 60.0, "baixa": "2025-05-22", "obs": "PIX TRANSF  LARISSA22/05"}, {"tipodoc": "DEP", "doc": "94567", "valor": 60.0, "baixa": "2025-06-23", "obs": "PIX TRANSF  Larissa23/06"}, {"tipodoc": "DEP", "doc": "94568", "valor": 60.0, "baixa": "2025-07-28", "obs": "PIX TRANSF  Larissa28/07"}, {"tipodoc": "DEP", "doc": "94571", "valor": 60.0, "baixa": "2025-08-26", "obs": "PIX TRANSF  Larissa26/08"}, {"tipodoc": "DEP", "doc": "94570", "valor": 22.13, "baixa": "2025-08-22", "obs": "PIX TRANSF  LENISE 22/08"}], "SERIE": [{"k": "2025-05", "label": "mai/25", "v": 60.0}, {"k": "2025-06", "label": "jun/25", "v": 60.0}, {"k": "2025-07", "label": "jul/25", "v": 221.51}, {"k": "2025-08", "label": "ago/25", "v": 82.13}, {"k": "2025-09", "label": "set/25", "v": 0}, {"k": "2025-10", "label": "out/25", "v": 0}, {"k": "2025-11", "label": "nov/25", "v": 513.08}, {"k": "2025-12", "label": "dez/25", "v": 0}, {"k": "2026-01", "label": "jan/26", "v": 500.0}, {"k": "2026-02", "label": "fev/26", "v": 600.0}, {"k": "2026-03", "label": "mar/26", "v": 916.65}, {"k": "2026-04", "label": "abr/26", "v": 0}, {"k": "2026-05", "label": "mai/26", "v": 119.26}, {"k": "2026-06", "label": "jun/26", "v": 4184.77}], "PREV": "03/08", "SAIU": [{"tipodoc": "DEP", "doc": "94992", "valor": 750.0, "baixa": "2026-07-29", "obs": "PIX RECEBIDO ALINE D29/07 ALINE DIAS SILVA 34.196.244/0001-03 JULIANA OLIVEIRA DOCES AFETIVOS"}], "NOVOS": [], "ATU": "12/08/2026"};
+const fmt=v=>v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+const fmtD=s=>{const[y,m,d]=s.split('-');return d+'/'+m+'/'+y;};
+const BRLk=v=>v>=1000?((v/1000).toLocaleString('pt-BR',{maximumFractionDigits:1})+'k'):v.toLocaleString('pt-BR',{maximumFractionDigits:0});
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const tip=document.getElementById('tip');
 
-const brl = v => v.toLocaleString('pt-BR', {style:'currency', currency:'BRL'});
-const fmtDate = iso => { const [y,m,d] = iso.split('-'); return `${d}/${m}/${y}`; };
-const today = new Date(); today.setHours(0,0,0,0);
-const daysSince = iso => Math.round((today - new Date(iso + 'T00:00:00')) / 86400000);
-DATA.forEach(r => r.idade = daysSince(r.baixa));
+/* KPIs */
+(function(){
+  const tot=P.ROWS.reduce((s,r)=>s+r.valor,0);
+  const antigo=P.ROWS.map(r=>r.baixa).filter(Boolean).sort()[0];
+  document.getElementById('kpis').innerHTML=`
+    <div class="kpi"><div class="lbl">Total sem identifica&ccedil;&atilde;o</div><div class="val">${fmt(tot)}</div><div class="det">${P.ROWS.length} dep&oacute;sito(s)</div></div>
+    <div class="kpi"><div class="lbl">Mais antigo</div><div class="val" style="font-size:20px">${antigo?fmtD(antigo):'—'}</div><div class="det">aguardando identifica&ccedil;&atilde;o desde ent&atilde;o</div></div>
+    <div class="kpi"><div class="lbl">Identificados desde 03/08</div><div class="val" style="color:#1e7d46">${fmt(P.SAIU.reduce((s,r)=>s+r.valor,0))}</div><div class="det">${P.SAIU.length} dep&oacute;sito(s) resolvido(s)</div></div>`;
+})();
 
-let sortKey = 'baixa', sortAsc = false;
-const $ = id => document.getElementById(id);
-
-// KPIs
-const total = DATA.reduce((s,r)=>s+r.valor,0);
-$('kTotal').textContent = brl(total);
-$('kTotalHint').textContent = 'soma dos ' + DATA.length + ' lançamentos';
-$('kCount').textContent = DATA.length;
-const oldest = [...DATA].sort((a,b)=>a.baixa.localeCompare(b.baixa))[0];
-$('kOldest').textContent = oldest.idade + ' dias';
-$('kOldestHint').textContent = 'desde ' + fmtDate(oldest.baixa);
-const biggest = [...DATA].sort((a,b)=>b.valor-a.valor)[0];
-$('kMax').textContent = brl(biggest.valor);
-$('kMaxHint').textContent = biggest.obs.slice(0,26) + (biggest.obs.length>26?'…':'');
-
-// year filter
-[...new Set(DATA.map(r=>r.baixa.slice(0,4)))].sort().forEach(y=>{
-  const o = document.createElement('option'); o.value = y; o.textContent = y;
-  $('yearFilter').appendChild(o);
-});
-
-function escHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-function highlight(text, q){
-  const safe = escHtml(text);
-  if(!q) return safe;
-  const rx = new RegExp('(' + q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + ')','gi');
-  return safe.replace(rx,'<mark>$1</mark>');
-}
-
-function currentRows(){
-  const q = $('q').value.trim();
-  const yr = $('yearFilter').value;
-  let rows = DATA.filter(r => {
-    if (yr && r.baixa.slice(0,4) !== yr) return false;
-    if (!q) return true;
-    const hay = (r.obs + ' ' + r.doc + ' ' + r.tipo + ' ' + fmtDate(r.baixa) + ' ' + r.valor.toFixed(2).replace('.',',')).toLowerCase();
-    return hay.includes(q.toLowerCase());
+/* semanal (linha) */
+(function(){
+  const s=P.HIST.map(h=>({label:h.label,total:h.total}));
+  const box=document.getElementById('chartWeek');
+  const last=s[s.length-1], prev=s.length>1?s[s.length-2]:null, dEl=document.getElementById('weekDelta');
+  if(prev){const d=last.total-prev.total, up=d>0.005, dn=d<-0.005;
+    const col=up?'#d11a2a':(dn?'#2e7d32':'#7a6f78'), sym=up?'&#9650;':(dn?'&#9660;':'&#9644;');
+    dEl.innerHTML='<div style="text-align:right"><span style="font-weight:800;font-size:15px;color:'+col+'">'+sym+' '+fmt(Math.abs(d))+'</span><div style="color:var(--muted);font-size:11px">vs. atualiza&ccedil;&atilde;o anterior ('+prev.label+')</div></div>';}
+  document.getElementById('weekSub').innerHTML='Total sem concilia&ccedil;&atilde;o a cada planilha &mdash; '+s.length+' ponto(s)';
+  const W=Math.max(720,s.length*95),H=280,PL=64,PR=22,PT=26,PB=44,cw=W-PL-PR,ch=H-PT-PB;
+  const vals=s.map(d=>d.total),mx=Math.max(...vals),mn=Math.min(...vals);
+  const nice=Math.pow(10,Math.floor(Math.log10((mx-mn)||mx||1)));
+  let top=Math.ceil((mx+(mx-mn)*0.2+nice*0.1)/nice)*nice, bot=Math.max(0,Math.floor((mn-(mx-mn)*0.2)/nice)*nice);
+  if(top===bot)top=bot+nice;
+  const X=i=>PL+(s.length===1?cw/2:cw*i/(s.length-1)), Y=v=>PT+ch-ch*(v-bot)/((top-bot)||1);
+  let g='';
+  for(let i=0;i<=4;i++){const y=PT+ch-ch*i/4,v=bot+(top-bot)*i/4;
+    g+=`<line x1="${PL}" y1="${y}" x2="${W-PR}" y2="${y}" stroke="#efe6ec"/>`;
+    g+=`<text x="${PL-8}" y="${y+4}" text-anchor="end" font-size="10.5" fill="#9a8e96">${BRLk(v)}</text>`;}
+  const pts=s.map((d,i)=>[X(i),Y(d.total)]);
+  const line=pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ');
+  const area=line+` L ${pts[pts.length-1][0].toFixed(1)} ${PT+ch} L ${pts[0][0].toFixed(1)} ${PT+ch} Z`;
+  g+=`<path d="${area}" fill="url(#wgrad)" opacity="0.2"/>`;
+  g+=`<path d="${line}" fill="none" stroke="#8f574a" stroke-width="2.5" stroke-linejoin="round"/>`;
+  s.forEach((d,i)=>{const x=X(i),y=Y(d.total);
+    g+=`<g class="wpt" data-lab="${d.label}" data-v="${d.total}"><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="4.5" fill="#fff" stroke="#8f574a" stroke-width="2.5"/><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="14" fill="transparent"/></g>`;
+    g+=`<text x="${x.toFixed(1)}" y="${(H-PB+18)}" text-anchor="middle" font-size="10.5" fill="#7a6f78">${d.label}</text>`;
+    g+=`<text x="${x.toFixed(1)}" y="${(y-11).toFixed(1)}" text-anchor="middle" font-size="10" font-weight="700" fill="#8f574a">${BRLk(d.total)}</text>`;});
+  box.innerHTML=`<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" preserveAspectRatio="xMinYMin meet"><defs><linearGradient id="wgrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#C2897B"/><stop offset="1" stop-color="#ffffff"/></linearGradient></defs>${g}</svg>`;
+  box.querySelectorAll('.wpt').forEach(el=>{
+    el.addEventListener('mousemove',e=>{tip.innerHTML=`<b>${el.dataset.lab}</b><br>Sem identifica&ccedil;&atilde;o: ${fmt(+el.dataset.v)}`;tip.style.opacity=1;
+      tip.style.left=Math.min(e.clientX+14,window.innerWidth-220)+'px';tip.style.top=(e.clientY+14)+'px';});
+    el.addEventListener('mouseleave',()=>tip.style.opacity=0);
   });
-  rows.sort((a,b)=>{
-    let va = a[sortKey], vb = b[sortKey];
-    if (typeof va === 'string') { va = va.toLowerCase(); vb = vb.toLowerCase(); }
-    return (va < vb ? -1 : va > vb ? 1 : 0) * (sortAsc ? 1 : -1);
-  });
-  return rows;
-}
+})();
 
-function render(){
-  const q = $('q').value.trim();
-  const rows = currentRows();
-  $('rows').innerHTML = rows.map(r => `
-    <tr>
-      <td class="datecol">${fmtDate(r.baixa)}</td>
-      <td class="desc">${highlight(r.obs, q)}<div class="doc">${r.tipo} &bull; Doc ${r.doc}</div></td>
-      <td class="r valcol">${brl(r.valor)}</td>
-      <td><span class="pill${r.idade > 180 ? ' atraso' : ''}">${r.idade} dias</span></td>
-    </tr>`).join('');
-  $('empty').style.display = rows.length ? 'none' : 'block';
-  document.querySelector('#tbl tfoot').style.display = rows.length ? '' : 'none';
-  document.querySelector('#tbl thead').style.display = rows.length ? '' : 'none';
-  $('footTotal').textContent = brl(rows.reduce((s,r)=>s+r.valor,0));
-  $('countNote').textContent = rows.length + ' de ' + DATA.length + ' depósitos';
-  ['baixa','obs','valor','idade'].forEach(k => {
-    $('ar-'+k).textContent = k === sortKey ? (sortAsc ? '▲' : '▼') : '';
+/* mês a mês (barras terracota) */
+(function(){
+  const s=P.SERIE, el=document.getElementById('chartMes');
+  document.getElementById('mesSum').textContent=fmt(s.reduce((a,b)=>a+b.v,0));
+  const mx=Math.max(...s.map(x=>x.v),1);
+  const W=Math.max(640,el.clientWidth||900),H=230,padL=8,padR=8,padT=26,padB=26;
+  const iw=W-padL-padR, ih=H-padT-padB, n=s.length, slot=iw/n, bw=Math.min(46,Math.max(14,slot*0.55));
+  let svg=`<svg width="100%" viewBox="0 0 ${W} ${H}" style="display:block">`;
+  [0.25,0.5,0.75,1].forEach(f=>{const yy=padT+ih-f*ih;svg+=`<line x1="${padL}" x2="${W-padR}" y1="${yy}" y2="${yy}" stroke="#eee6e2"/>`;});
+  const fmtK=v=>v>=1000?('R$ '+(v/1000).toLocaleString('pt-BR',{maximumFractionDigits:1})+' mil'):(v>0?fmt(v):'');
+  s.forEach((d,i)=>{
+    const x=padL+i*slot+(slot-bw)/2, h=d.v?(d.v/mx)*ih:0, y=padT+ih-h;
+    svg+=`<g class="mb" data-lab="${d.label}" data-v="${d.v}">`;
+    if(h>0) svg+=`<rect x="${x}" y="${y}" width="${bw}" height="${Math.max(h,2)}" rx="4" fill="#b5715f"/>`;
+    if(d.v>0) svg+=`<text x="${x+bw/2}" y="${y-6}" text-anchor="middle" font-size="10" font-weight="700" fill="#181018">${fmtK(d.v)}</text>`;
+    svg+=`<rect x="${padL+i*slot}" y="${padT-14}" width="${slot}" height="${ih+14}" fill="transparent"/>`;
+    svg+=`<text x="${x+bw/2}" y="${H-8}" text-anchor="middle" font-size="10.5" fill="#7a6f78">${d.label}</text></g>`;
   });
-}
+  svg+=`<line x1="${padL}" x2="${W-padR}" y1="${padT+ih}" y2="${padT+ih}" stroke="#d9cfc9"/></svg>`;
+  el.innerHTML=svg;
+  el.querySelectorAll('.mb').forEach(g=>{
+    g.addEventListener('mousemove',e=>{tip.innerHTML=`<b>${g.dataset.lab}</b><br>${fmt(+g.dataset.v)}`;tip.style.opacity=1;
+      tip.style.left=Math.min(e.clientX+14,window.innerWidth-180)+'px';tip.style.top=(e.clientY+14)+'px';});
+    g.addEventListener('mouseleave',()=>tip.style.opacity=0);
+  });
+})();
 
-document.querySelectorAll('#tbl thead th').forEach(th => {
-  th.addEventListener('click', () => {
-    const k = th.dataset.key;
-    if (sortKey === k) sortAsc = !sortAsc; else { sortKey = k; sortAsc = (k === 'obs'); }
-    render();
-  });
-});
-$('q').addEventListener('input', render);
-$('yearFilter').addEventListener('change', render);
-render();
+/* variação */
+(function(){
+  const st=P.SAIU.reduce((s,r)=>s+r.valor,0), nt=P.NOVOS.reduce((s,r)=>s+r.valor,0);
+  document.getElementById('varSub').innerHTML=`Compara os dep&oacute;sitos em aberto com a planilha de 03/08 &mdash; <span class="down">&#9660; ${fmt(st)} identificados</span> &middot; <span class="up">&#9650; ${fmt(nt)} novos dep&oacute;sitos</span>`;
+  const row=(a,b)=>`<div class="vrow"><span>${a}</span><span style="white-space:nowrap">${b}</span></div>`;
+  let x='';
+  x+=`<div class="vcol"><h3>Identificados / resolvidos (${P.SAIU.length})</h3>`+(P.SAIU.length?P.SAIU.map(r=>row((r.baixa?fmtD(r.baixa)+' · ':'')+'Doc '+esc(r.doc),`<span class="down">&#9660; ${fmt(r.valor)}</span> <span class="vpill pago">identificado</span>`)).join('')+`<div class="vtot"><span>Total</span><span class="down">&#9660; ${fmt(st)}</span></div>`:'<div class="csub">Nenhum</div>')+`</div>`;
+  x+=`<div class="vcol"><h3>Novos dep&oacute;sitos sem identifica&ccedil;&atilde;o (${P.NOVOS.length})</h3>`+(P.NOVOS.length?P.NOVOS.map(r=>row((r.baixa?fmtD(r.baixa)+' · ':'')+'Doc '+esc(r.doc),`<span class="up">&#9650; ${fmt(r.valor)}</span> <span class="vpill novo">novo</span>`)).join('')+`<div class="vtot"><span>Total</span><span class="up">&#9650; ${fmt(nt)}</span></div>`:'<div class="csub">Nenhum</div>')+`</div>`;
+  document.getElementById('varBox').innerHTML=x;
+})();
+
+/* lista */
+(function(){
+  document.getElementById('tbody').innerHTML=P.ROWS.map(r=>
+    `<tr><td>${r.baixa?fmtD(r.baixa):'&mdash;'}</td><td>${esc(r.tipodoc)}</td><td>${esc(r.doc)}</td><td class="obs">${esc(r.obs)}</td><td class="r v">${fmt(r.valor)}</td></tr>`).join('');
+  document.getElementById('tfoot').textContent=fmt(P.ROWS.reduce((s,r)=>s+r.valor,0));
+})();
 </script>
 </body>
 </html>
